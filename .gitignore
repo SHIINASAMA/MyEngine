@@ -1,0 +1,12 @@
+# 项目排除目录
+.vscode
+.idea
+
+# 项目排除文件类型
+*.iml
+*.exe
+*.obj
+*.o
+*.lib
+*.so
+*.dll
