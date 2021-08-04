@@ -32,7 +32,7 @@ listen()        : bool
 accept()        : socket_t
 close()         : bool
 shutdown()      : bool
-setsocketopt()  : bool
+setsockopt()    : bool
 ```
 
 ### TCP SERVER
