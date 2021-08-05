@@ -26,7 +26,8 @@
 
 ```text
 socket_t
-socket() : socket_t
+socket()        : socket_t
+connect()       : bool
 bind()          : bool
 listen()        : bool
 accept()        : socket_t
@@ -38,7 +39,13 @@ setsockopt()    : bool
 ### TCP SERVER
 
 ```text
-
+--------------
+| Tcp Server |
+--------------
+| Tcp Client |
+--------------
+|   Socket   |
+--------------
 ```
 
 ### HTTP SERVER
