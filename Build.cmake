@@ -2,7 +2,12 @@ set(engine_src
         src/native/Socket.h
         src/socket/TcpClient.h
         src/socket/TcpClient.cpp
-        src/socket/TcpServer.h src/socket/TcpServer.cpp)
+        src/socket/TcpServer.h
+        src/socket/TcpServer.cpp
+        src/http/Http.h
+        src/http/HttpHeader.cpp
+        src/http/HttpRequest.cpp
+        src/http/HttpResponse.cpp)
 
 if (UNIX)
     list(APPEND engine_src src/native/SocketLinux.cpp)
