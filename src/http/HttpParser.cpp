@@ -65,7 +65,54 @@ bool MyEngine::HttpParser::RequestParser(TcpClient &sock, HttpRequest *request) 
 }
 
 bool MyEngine::HttpParser::ResponseParser(TcpClient &sock, HttpResponse *response) {
-    return false;
+    char buffer[BUFFER_MAX_LENGTH]{0};
+    ssize_t length;
+
+#pragma "VERSION STATUS_CODE DES"
+    length = GetLine(sock, buffer, BUFFER_MAX_LENGTH);
+    if (length == -1) {
+        return false;
+    }
+    auto v = Split(buffer, " ");
+    if (v[0] == "HTTP/1.1") {
+        response->setHttpVersion(11);
+    } else {
+        response->setHttpVersion(-1);
+    }
+    response->setStateCode((int) strtol(v[1].c_str(), nullptr, 10));
+#pragma endregion
+#pragma HEADSERS
+    ssize_t body_length = 0;
+    while (true) {
+        length = GetLine(sock, buffer, BUFFER_MAX_LENGTH);
+        if (length == -1) {
+            return false;
+        }
+
+        auto argv = Split(buffer, ": ");
+        if (argv[0] == "\n") {
+            break;
+        } else if (strcasecmp("content-length", argv[0].c_str()) == 0) {
+            body_length = strtol(argv[1].c_str(), nullptr, 10);
+        }
+        response->setHeader({argv[0], argv[1].substr(0, argv[1].length() - 1)});
+    }
+#pragma endregion
+#pragma region BODY
+    if (body_length != 0) {
+        std::stringstream stream;
+        while (true) {
+            if (body_length == 0) {
+                break;
+            }
+            length = sock.recv(buffer, BUFFER_MAX_LENGTH, 0);
+            stream.write(buffer, length);
+            body_length -= length;
+        }
+        response->setBody(stream.str());
+    }
+#pragma endregion
+    return true;
 }
 
 ssize_t MyEngine::HttpParser::GetLine(MyEngine::TcpClient &sock, char *buf, int size) {

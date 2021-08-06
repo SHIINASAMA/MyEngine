@@ -29,8 +29,8 @@ namespace MyEngine {
         HttpRequest(HttpMethod method, const string &url, const string &query_string, int version);
         ~HttpRequest() = default;
 
-        HttpHeader getHeader(const string& key);
-        void setHeader(const HttpHeader& header);
+        HttpHeader getHeader(const string &key);
+        void setHeader(const HttpHeader &header);
 
         HttpMethod getMethod() const;
         void setMethod(HttpMethod method);
@@ -46,6 +46,7 @@ namespace MyEngine {
         std::stringstream dump() const;
 
         const std::vector<HttpHeader> &getHeaders() const;
+
     protected:
         HttpMethod method = HttpMethod::NONSUPPORT;
         int version       = 11;
@@ -55,16 +56,16 @@ namespace MyEngine {
         std::vector<HttpHeader> headers;
     };
 
-    class HttpResponse{
+    class HttpResponse {
     public:
-        HttpResponse()                     = default;
+        HttpResponse()                      = default;
         HttpResponse(const HttpResponse &)  = delete;
         HttpResponse(const HttpResponse &&) = delete;
         HttpResponse(int version, int state_code);
         ~HttpResponse() = default;
 
-        HttpHeader getHeader(const string& key);
-        void setHeader(const HttpHeader& header);
+        HttpHeader getHeader(const string &key);
+        void setHeader(const HttpHeader &header);
 
         int getHttpVersion() const;
         void setHttpVersion(int version);
@@ -76,6 +77,7 @@ namespace MyEngine {
         std::stringstream dump() const;
 
         const std::vector<HttpHeader> &getHeaders() const;
+
     protected:
         int version{11};
         int state_code{200};
