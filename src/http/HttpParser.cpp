@@ -11,6 +11,9 @@ bool MyEngine::HttpParser::RequestParser(TcpClient &sock, HttpRequest *request) 
 
 #pragma region "METHOD URL VERSION \r\n"
     length = GetLine(sock, buffer, BUFFER_MAX_LENGTH);
+    if(length == -1){
+        return false;
+    }
     auto v = Split(buffer, " ");
     if (v[0] == "GET") {
         request->setMethod(HttpMethod::GET);
@@ -37,6 +40,9 @@ bool MyEngine::HttpParser::RequestParser(TcpClient &sock, HttpRequest *request) 
     ssize_t body_length = 0;
     while (true) {
         length    = GetLine(sock, buffer, BUFFER_MAX_LENGTH);
+        if(length == -1){
+            return false;
+        }
         auto argv = Split(buffer, ": ");
         if (argv[0] == "\n") {
             break;
@@ -60,7 +66,6 @@ bool MyEngine::HttpParser::RequestParser(TcpClient &sock, HttpRequest *request) 
         request->setBody(stream.str());
     }
 #pragma endregion
-
     return true;
 }
 
