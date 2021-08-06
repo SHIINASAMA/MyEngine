@@ -93,3 +93,7 @@ void MyEngine::HttpRequest::setQueryString(const string &query_string) {
 void MyEngine::HttpRequest::setHttpVersion(int version) {
     this->version = version;
 }
+
+const std::vector<MyEngine::HttpHeader> &MyEngine::HttpRequest::getHeaders() const {
+    return this->headers;
+}

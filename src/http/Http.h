@@ -17,7 +17,7 @@ namespace MyEngine {
         string key;
         string value;
         HttpHeader() = default;
-        HttpHeader(string &key, string &value);
+        HttpHeader(const string &key, const string &value);
         std::stringstream dump() const;
     };
 
@@ -45,6 +45,7 @@ namespace MyEngine {
 
         std::stringstream dump() const;
 
+        const std::vector<HttpHeader> &getHeaders() const;
     protected:
         HttpMethod method = HttpMethod::NONSUPPORT;
         int version       = 11;
@@ -74,6 +75,7 @@ namespace MyEngine {
 
         std::stringstream dump() const;
 
+        const std::vector<HttpHeader> &getHeaders() const;
     protected:
         int version{11};
         int state_code{200};

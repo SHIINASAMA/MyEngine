@@ -7,15 +7,20 @@ set(engine_src
         src/http/Http.h
         src/http/HttpHeader.cpp
         src/http/HttpRequest.cpp
-        src/http/HttpResponse.cpp)
+        src/http/HttpResponse.cpp
+        src/http/HttpServer.h
+        src/http/HttpServer.cpp
+        src/http/HttpParser.h
+        src/http/HttpParser.cpp)
 
 if (UNIX)
-    list(APPEND engine_src src/native/SocketLinux.cpp)
+    add_library(MyEngineLib ${engine_src} src/native/SocketLinux.cpp)
+    set(THREADS_PREFER_PTHREAD_FLAG ON)
+    find_package(Threads REQUIRED)
+    target_link_libraries(MyEngineLib PUBLIC Threads::Threads)
 elseif (WIN32)
 elseif (APPLE)
 endif ()
-
-add_library(MyEngineLib ${engine_src})
 
 function(add_test exec_name src)
     add_executable(${exec_name} ${src})
@@ -24,3 +29,4 @@ endfunction(add_test)
 
 add_test(TestTcpClient test/TestTcpClient/main.cpp)
 add_test(TestTcpServer test/TestTcpServer/main.cpp)
+add_test(TestHttpServer test/TestHttpServer/main.cpp)

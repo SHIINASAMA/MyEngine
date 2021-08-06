@@ -63,4 +63,8 @@ std::stringstream MyEngine::HttpResponse::dump() const {
     if(!body.empty()){
         stream << body;
     }
+    return stream;
+}
+const std::vector<HttpHeader> &MyEngine::HttpResponse::getHeaders() const {
+    return this->headers;
 }
