@@ -13,7 +13,7 @@ set(engine_src
         src/http/HttpParser.h
         src/http/HttpParser.cpp
         src/http/HttpClient.h
-        src/http/HttpClient.cpp)
+        src/http/HttpClient.cpp src/servlet/Servlet.h src/servlet/Servlet.cpp)
 
 if (UNIX)
     add_library(MyEngineLib ${engine_src} src/native/SocketLinux.cpp)
@@ -33,3 +33,4 @@ add_test(TestTcpClient test/TestTcpClient/main.cpp)
 add_test(TestTcpServer test/TestTcpServer/main.cpp)
 add_test(TestHttpServer test/TestHttpServer/main.cpp)
 add_test(TestHttpClient test/TestHttpClient/main.cpp)
+add_test(TestServlet test/TestServlet/main.cpp)
