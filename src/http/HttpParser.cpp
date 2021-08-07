@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cstring>
 #include <http/HttpParser.h>
 #include <sstream>
@@ -12,7 +13,7 @@ bool MyEngine::HttpParser::RequestParser(TcpClient &sock, HttpRequest *request) 
 
 #pragma region "METHOD URL VERSION \r\n"
     length = GetLine(sock, buffer, BUFFER_MAX_LENGTH);
-    if(length == -1){
+    if (length == 0) {
         return false;
     }
     auto v = Split(buffer, " ");
@@ -40,17 +41,18 @@ bool MyEngine::HttpParser::RequestParser(TcpClient &sock, HttpRequest *request) 
 #pragma region HEADERS
     ssize_t body_length = 0;
     while (true) {
-        length    = GetLine(sock, buffer, BUFFER_MAX_LENGTH);
-        if(length == -1){
+        length = GetLine(sock, buffer, BUFFER_MAX_LENGTH);
+        if (length == 0) {
+            puts(strerror(errno));
             return false;
         }
         auto argv = Split(buffer, ": ");
-        if (argv[0] == "\n") {
+        if (length < 0 || argv[0] == "\n") {
             break;
         } else if (strcasecmp("content-length", argv[0].c_str()) == 0) {
             body_length = strtol(argv[1].c_str(), nullptr, 10);
         }
-        request->setHeader({argv[0], argv[1].substr(0, argv[1].length() - 1)});
+        request->setHeader(new HttpHeader{argv[0], argv[1].substr(0, argv[1].length() - 1)});
     }
 #pragma endregion
 #pragma region BODY
@@ -101,7 +103,7 @@ bool MyEngine::HttpParser::ResponseParser(TcpClient &sock, HttpResponse *respons
         } else if (strcasecmp("content-length", argv[0].c_str()) == 0) {
             body_length = strtol(argv[1].c_str(), nullptr, 10);
         }
-        response->setHeader({argv[0], argv[1].substr(0, argv[1].length() - 1)});
+        response->setHeader(new HttpHeader{argv[0], argv[1].substr(0, argv[1].length() - 1)});
     }
 #pragma endregion
 #pragma region BODY
@@ -145,30 +147,14 @@ ssize_t MyEngine::HttpParser::GetLine(MyEngine::TcpClient &sock, char *buf, int 
     return i;
 }
 
-std::vector<std::string> MyEngine::HttpParser::Split(const std::string &string, const std::string &pattern) {
-    std::vector<std::string> li;
-    std::string subStr;
-    std::string tPattern;
-    size_t patternLen = pattern.length();
-    size_t strLen     = string.length();
-
-    for (size_t i = 0; i < string.length(); i++) {
-        if (pattern[0] == string[i] && ((strLen - i) >= patternLen)) {
-            if (memcmp(&pattern[0], &string[i], patternLen) == 0) {
-                i += patternLen - 1;
-                if (!subStr.empty()) {
-                    li.push_back(subStr);
-                    subStr.clear();
-                }
-            } else {
-                subStr.push_back(string[i]);
-            }
-        } else {
-            subStr.push_back(string[i]);
-        }
+std::vector<std::string> MyEngine::HttpParser::Split(const std::string &str, const std::string &pattern) {
+    std::vector<std::string> res;
+    char buffer[1024];
+    strcpy(buffer, str.c_str());
+    char *p = strtok(buffer, pattern.c_str());
+    res.emplace_back(p);
+    while ((p = strtok(nullptr, pattern.c_str()))) {
+        res.emplace_back(p);
     }
-    if (!subStr.empty()) {
-        li.push_back(subStr);
-    }
-    return li;
+    return res;
 }

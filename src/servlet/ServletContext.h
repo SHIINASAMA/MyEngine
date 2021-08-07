@@ -11,10 +11,10 @@ namespace MyEngine{
         string getName() const;
         string getUrl() const;
         string getServletClassName() const;
-        const Servlet &getServlet() const;
+        const Servlet *getServlet() const;
 
         void servletInit();
-        void servletService(HttpRequest &request, HttpResponse &response);
+        void servletService(HttpRequest *request, HttpResponse *response);
         void ServletDestroy();
 
     private:

@@ -17,7 +17,12 @@ set(engine_src
         src/servlet/Servlet.h
         src/servlet/Servlet.cpp
         src/servlet/ServletContext.h
-        src/servlet/ServletContext.cpp)
+        src/servlet/ServletContext.cpp
+        src/servlet/HttpServlet.h
+        src/servlet/HttpServlet.cpp
+        src/app/App.h
+        src/app/App.cpp
+        )
 
 if (UNIX)
     add_library(MyEngineLib ${engine_src} src/native/SocketLinux.cpp)
@@ -38,3 +43,4 @@ add_test(TestTcpServer test/TestTcpServer/main.cpp)
 add_test(TestHttpServer test/TestHttpServer/main.cpp)
 add_test(TestHttpClient test/TestHttpClient/main.cpp)
 add_test(TestServlet test/TestServlet/main.cpp)
+add_test(TestApp test/TestApp/main.cpp)

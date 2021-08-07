@@ -20,10 +20,10 @@ namespace MyEngine {
 
         bool socket(int domain, int type, int protocol);
         bool good() const;
-        bool connect(const sockaddr *address, socklen_t address_len) const;
+        bool connect(const sockaddr *_address, socklen_t address_len) const;
         bool bind(const struct sockaddr *address, socklen_t address_len) const;
         bool listen(int backlog) const;
-        Socket accept(struct sockaddr *address, socklen_t *address_len) const;
+        Socket accept(struct sockaddr *_address, socklen_t *address_len) const;
         bool close();
         bool shutdown(int how) const;
         bool setsockopt(int level, int opt_name, const void *opt_value, socklen_t opt_len) const;
@@ -32,7 +32,7 @@ namespace MyEngine {
         ssize_t send(const void *buf, size_t len, int flags) const;
 
         socket_t getSocket() const;
-        const sockaddr_in getAddress() const;
+        sockaddr_in getAddress() const;
 
     protected:
         socket_t fd{-1};

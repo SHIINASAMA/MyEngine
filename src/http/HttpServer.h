@@ -1,16 +1,14 @@
 #pragma once
 #include <http/Http.h>
-#include <socket/TcpServer.h>
 #include <http/HttpClient.h>
+#include <socket/TcpServer.h>
 
 using std::string;
 
-namespace MyEngine{
+namespace MyEngine {
 
-    class HttpServer : TcpServer{
+    class HttpServer : public TcpServer {
     public:
-        HttpServer(const HttpServer &) = delete;
-        HttpServer(const HttpServer &&) = delete;
         HttpServer(const string &ipaddress, unsigned short port);
         ~HttpServer() override = default;
 
@@ -18,9 +16,5 @@ namespace MyEngine{
         bool init(int backlog);
         TcpClient accept();
         void shutdown();
-
-        virtual void onRequest(HttpRequest &request, HttpResponse &response) {};
-
-    protected:
     };
-}
+}// namespace MyEngine

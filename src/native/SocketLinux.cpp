@@ -1,3 +1,4 @@
+#include <fcntl.h>
 #include <native/Socket.h>
 #include <unistd.h>
 
@@ -18,25 +19,29 @@ MyEngine::Socket::~Socket() {
     }
 }
 
-MyEngine::Socket MyEngine::Socket::accept(struct sockaddr *address, socklen_t *address_len) const {
-    socket_t client_sock = ::accept(this->fd, address, address_len);
-    auto *temp           = (sockaddr_in *) &(*address);
+MyEngine::Socket MyEngine::Socket::accept(struct sockaddr *_address, socklen_t *address_len) const {
+    socket_t client_sock = ::accept(this->fd, _address, address_len);
+    auto *temp           = (sockaddr_in *) &(*_address);
     return Socket(client_sock, *temp);
 }
 
 #define XX(context) \
-    return context != -1 ? true : false
+    return (context) != -1 ? true : false
 
 bool MyEngine::Socket::good() const {
     XX(this->fd);
 }
 
 bool MyEngine::Socket::socket(int domain, int type, int protocol) {
-    XX((this->fd = ::socket(domain, type, protocol)));
+    //    XX((this->fd = ::socket(domain, type, protocol)));
+    auto temp  = (this->fd = ::socket(domain, type, protocol)) != -1;
+    auto flags = fcntl(fd, F_GETFL, 0);    //获取文件的flags值。
+    fcntl(fd, F_SETFL, flags | O_NONBLOCK);//设置成非阻塞模式；
+    return temp;
 }
 
-bool MyEngine::Socket::bind(const struct sockaddr *address, socklen_t address_len) const {
-    XX(::bind(this->fd, address, address_len));
+bool MyEngine::Socket::bind(const struct sockaddr *_address, socklen_t address_len) const {
+    XX(::bind(this->fd, _address, address_len));
 }
 
 bool MyEngine::Socket::listen(int backlog) const {
@@ -45,7 +50,6 @@ bool MyEngine::Socket::listen(int backlog) const {
 
 bool MyEngine::Socket::close() {
     int rt = ::close(this->fd);
-    if (rt == 0) this->fd = -1;
     XX(rt);
 }
 
@@ -61,8 +65,8 @@ bool MyEngine::Socket::shutdown(int how) const {
     XX(::shutdown(this->fd, how));
 }
 
-bool MyEngine::Socket::connect(const sockaddr *address, socklen_t address_len) const {
-    XX(::connect(this->fd, address, address_len));
+bool MyEngine::Socket::connect(const sockaddr *_address, socklen_t address_len) const {
+    XX(::connect(this->fd, _address, address_len));
 }
 
 #undef XX
@@ -75,7 +79,7 @@ ssize_t MyEngine::Socket::send(const void *buf, size_t len, int flags) const {
     return ::send(this->fd, buf, len, flags);
 }
 
-const sockaddr_in MyEngine::Socket::getAddress() const {
+sockaddr_in MyEngine::Socket::getAddress() const {
     return address;
 }
 
