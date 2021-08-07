@@ -11,17 +11,25 @@ MyEngine::HttpResponse::HttpResponse(int version, int state_code) {
     this->state_code = state_code;
 }
 
-HttpHeader MyEngine::HttpResponse::getHeader(const string &key) {
-    for (auto i : headers) {
-        if (key == i.key) {
-            return i;
-        }
+bool MyEngine::HttpResponse::getHeader(const string &key, HttpHeader *header) {
+    auto i = headers.find(key);
+    if(i != headers.end()){
+        *header = i->second;
+        return true;
+    }else{
+        return false;
     }
-    return {};
 }
 
-void MyEngine::HttpResponse::setHeader(const HttpHeader &header) {
-    headers.emplace_back(header);
+bool MyEngine::HttpResponse::setHeader(const HttpHeader &header) {
+    auto i = headers.find(header.key);
+    if(i != headers.end()){
+        i->second = header;
+        return false;
+    }else{
+        headers.emplace(header.key, header);
+        return true;
+    }
 }
 
 int MyEngine::HttpResponse::getHttpVersion() const {
@@ -56,7 +64,7 @@ std::stringstream MyEngine::HttpResponse::dump() const {
     stream << state_code << "\r\n";
 
     for (const auto &i : headers) {
-        stream << i.dump().str();
+        stream << i.second.dump().str();
     }
     stream << "\r\n";
 
@@ -65,6 +73,7 @@ std::stringstream MyEngine::HttpResponse::dump() const {
     }
     return stream;
 }
-const std::vector<HttpHeader> &MyEngine::HttpResponse::getHeaders() const {
-    return this->headers;
+
+const std::map<string, HttpHeader, MyEngine::strcmp<>> &MyEngine::HttpResponse::getHeaders() const {
+    return headers;
 }

@@ -1,5 +1,6 @@
 #include <http/Http.h>
 #include <socket/TcpClient.h>
+#include <vector>
 
 namespace MyEngine{
 

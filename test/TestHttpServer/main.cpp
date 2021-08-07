@@ -12,7 +12,7 @@ using MyEngine::HttpHeader;
 using MyEngine::HttpParser;
 
 int main(){
-    HttpServer server("0.0.0.0", 8000);
+    HttpServer server("0.0.0.0", 80);
     bool is_init = server.init(20);
     if(!is_init){
         printf("%s\n", strerror(errno));
@@ -24,7 +24,7 @@ int main(){
     HttpRequest request;
     HttpParser::RequestParser(client, &request);
     for(const auto& i : request.getHeaders()){
-        printf("%s: %s\n", i.key.c_str(), i.value.c_str());
+        printf("%s: %s\n", i.second.key.c_str(), i.second.value.c_str());
     }
     if(request.getMethod() == MyEngine::HttpMethod::POST){
         printf("%s", request.getBody().c_str());
