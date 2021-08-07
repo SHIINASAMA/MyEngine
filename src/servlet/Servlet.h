@@ -6,8 +6,11 @@ namespace MyEngine{
     class Servlet{
     public:
         Servlet() = default;
-        virtual void service(HttpRequest &request, HttpResponse &response);
         virtual ~Servlet() = default;
+
+        virtual void init() = 0;
+        virtual void service(HttpRequest &request, HttpResponse &response) = 0;
+        virtual void destroy() = 0;
 
         string getClassName() const;
     };

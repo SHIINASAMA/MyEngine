@@ -1,10 +1,9 @@
 #pragma once
 #include <http/Http.h>
 #include <socket/TcpServer.h>
-#include <thread>
+#include <http/HttpClient.h>
 
 using std::string;
-using std::thread;
 
 namespace MyEngine{
 
@@ -18,10 +17,9 @@ namespace MyEngine{
     public:
         bool init(int backlog);
         TcpClient accept();
-        void exec(TcpClient client);
         void shutdown();
 
-        virtual void onRequest(HttpRequest* request, HttpResponse* response) {};
+        virtual void onRequest(HttpRequest &request, HttpResponse &response) {};
 
     protected:
     };

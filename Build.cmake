@@ -13,7 +13,11 @@ set(engine_src
         src/http/HttpParser.h
         src/http/HttpParser.cpp
         src/http/HttpClient.h
-        src/http/HttpClient.cpp src/servlet/Servlet.h src/servlet/Servlet.cpp)
+        src/http/HttpClient.cpp
+        src/servlet/Servlet.h
+        src/servlet/Servlet.cpp
+        src/servlet/ServletContext.h
+        src/servlet/ServletContext.cpp)
 
 if (UNIX)
     add_library(MyEngineLib ${engine_src} src/native/SocketLinux.cpp)

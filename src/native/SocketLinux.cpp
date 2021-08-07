@@ -78,3 +78,7 @@ ssize_t MyEngine::Socket::send(const void *buf, size_t len, int flags) const {
 const sockaddr_in MyEngine::Socket::getAddress() const {
     return address;
 }
+
+socket_t MyEngine::Socket::getSocket() const {
+    return this->fd;
+}

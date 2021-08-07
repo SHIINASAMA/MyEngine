@@ -1,14 +1,13 @@
 #include <cstring>
+#include <http/HttpParser.h>
 #include <http/HttpServer.h>
-
-using std::string;
-using std::thread;
 
 using MyEngine::HttpHeader;
 using MyEngine::HttpMethod;
 using MyEngine::HttpRequest;
 using MyEngine::HttpResponse;
 using MyEngine::HttpServer;
+using std::string;
 
 HttpServer::HttpServer(const string &ipaddress, unsigned short port) : TcpServer(ipaddress.c_str(), port) {
 }
@@ -32,9 +31,6 @@ bool HttpServer::init(int backlog) {
 
 MyEngine::TcpClient HttpServer::accept() {
     return TcpServer::accept();
-}
-
-void HttpServer::exec(TcpClient client) {
 }
 
 void HttpServer::shutdown() {

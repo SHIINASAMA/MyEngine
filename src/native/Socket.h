@@ -31,6 +31,7 @@ namespace MyEngine {
         ssize_t recv(void *buf, size_t len, int flags) const;
         ssize_t send(const void *buf, size_t len, int flags) const;
 
+        socket_t getSocket() const;
         const sockaddr_in getAddress() const;
 
     protected:
