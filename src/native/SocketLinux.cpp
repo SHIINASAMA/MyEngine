@@ -14,9 +14,6 @@ MyEngine::Socket::Socket(const char *ipaddr, unsigned short port) {
 }
 
 MyEngine::Socket::~Socket() {
-    if (fd != -1) {
-        this->close();
-    }
 }
 
 MyEngine::Socket MyEngine::Socket::accept(struct sockaddr *_address, socklen_t *address_len) const {
@@ -33,11 +30,7 @@ bool MyEngine::Socket::good() const {
 }
 
 bool MyEngine::Socket::socket(int domain, int type, int protocol) {
-    //    XX((this->fd = ::socket(domain, type, protocol)));
-    auto temp  = (this->fd = ::socket(domain, type, protocol)) != -1;
-    auto flags = fcntl(fd, F_GETFL, 0);    //获取文件的flags值。
-    fcntl(fd, F_SETFL, flags | O_NONBLOCK);//设置成非阻塞模式；
-    return temp;
+    XX((this->fd = ::socket(domain, type, protocol)));
 }
 
 bool MyEngine::Socket::bind(const struct sockaddr *_address, socklen_t address_len) const {
@@ -85,4 +78,10 @@ sockaddr_in MyEngine::Socket::getAddress() const {
 
 socket_t MyEngine::Socket::getSocket() const {
     return this->fd;
+}
+
+MyEngine::Socket::Socket() {}
+
+void MyEngine::Socket::init(socket_t fd) {
+    this->fd = fd;
 }

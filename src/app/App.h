@@ -11,14 +11,21 @@ namespace MyEngine {
 
         void regServlet(const string &servlet_name, const string &url, Servlet *servlet);
         [[noreturn]] void exec();
+        const std::map<string, ServletContext, strcmp<>> &getMap() const;
 
     private:
         App(const string &ipaddress, unsigned short port);
         ~App() override;
         static App *app;
         std::map<string, ServletContext, strcmp<>> servletMap;
+    };
 
-        auto getMap() const;
-        void *onRequest(TcpClient client);
+    class TcpThread {
+    public:
+        explicit TcpThread(socket_t fd);
+        void Main();
+
+    protected:
+        TcpClient client;
     };
 }// namespace MyEngine

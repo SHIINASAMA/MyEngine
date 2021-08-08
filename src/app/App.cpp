@@ -1,6 +1,7 @@
 #include <app/App.h>
 #include <http/HttpParser.h>
 #include <servlet/HttpServlet.h>
+#include <thread>
 
 MyEngine::App *MyEngine::App::app;
 
@@ -30,26 +31,36 @@ void MyEngine::App::regServlet(const string &servlet_name, const string &url, My
     this->init(10);
     while (true) {
         auto client = this->accept();
-        App::onRequest(client);
+        if (client.good()) {
+            auto worker = new TcpThread(client.getSocket());
+            std::thread thread(&TcpThread::Main, worker);
+            thread.detach();
+        }
     }
 }
 
-auto MyEngine::App::getMap() const {
+const std::map<string, MyEngine::ServletContext, MyEngine::strcmp<>> &MyEngine::App::getMap() const {
     return this->servletMap;
 }
 
-void *MyEngine::App::onRequest(MyEngine::TcpClient client) {
+MyEngine::TcpThread::TcpThread(socket_t fd) {
+    this->client.init(fd);
+}
+
+void MyEngine::TcpThread::Main() {
     HttpRequest request;
     HttpResponse response;
     if (!HttpParser::RequestParser(client, &request)) {
-        return nullptr;
+        client.close();
+        return;
     }
 
+    auto servletMap      = App::GetApp()->getMap();
     auto servlet_context = servletMap.find(request.getUrl());
     if (servlet_context != servletMap.end()) {
         auto servlet     = dynamic_cast<const HttpServlet *>(servlet_context->second.getServlet());
         auto raw_servlet = const_cast<HttpServlet *>(servlet);
-        printf("%s : %s\n", servlet_context->second.getName().c_str() ,raw_servlet->getClassName().c_str());
+        printf("%s : %s\n", servlet_context->second.getName().c_str(), raw_servlet->getClassName().c_str());
         raw_servlet->service(&request, &response);
         auto baseString = response.dump().str();
         client.send(baseString.c_str(), baseString.length(), 0);
@@ -61,5 +72,5 @@ void *MyEngine::App::onRequest(MyEngine::TcpClient client) {
 
         // 404
     }
-    return nullptr;
+    delete this;
 }

@@ -21,10 +21,21 @@ class MyServlet1 : public HttpServlet {
     }
 };
 
+class MyServlet2 : public HttpServlet {
+    void doPost(HttpRequest *request, HttpResponse *response) override {
+        string bodyString = request->getBody();
+        string baseString = {"<h1> Your post data is </h1><h2>" + bodyString + "</h2>"};
+        response->setBody(baseString);
+        response->setContentLength(baseString.length());
+        response->setServer("My App");
+    }
+};
+
 int main() {
     App::CreateApp("0.0.0.0", 80);
     auto app = App::GetApp();
-    app->regServlet("myServlet0", "/", new MyServlet0);
-    app->regServlet("myServlet1", "/hello_page",new MyServlet1);
+    app->regServlet("def_get", "/", new MyServlet0);
+    app->regServlet("hello", "/hello_page", new MyServlet1);
+    app->regServlet("post_test", "/post_page", new MyServlet2);
     app->exec();
 }

@@ -16,6 +16,7 @@ namespace MyEngine {
     public:
         explicit Socket(socket_t socket, sockaddr_in address);
         Socket(const char *ipaddr, unsigned short port);
+        Socket();
         virtual ~Socket();
 
         bool socket(int domain, int type, int protocol);
@@ -30,6 +31,7 @@ namespace MyEngine {
         bool getsockopt(int level, int opt_name, void *opt_value, socklen_t *opt_len) const;
         ssize_t recv(void *buf, size_t len, int flags) const;
         ssize_t send(const void *buf, size_t len, int flags) const;
+        void init(socket_t fd);
 
         socket_t getSocket() const;
         sockaddr_in getAddress() const;

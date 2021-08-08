@@ -13,7 +13,7 @@ bool MyEngine::HttpParser::RequestParser(TcpClient &sock, HttpRequest *request) 
 
 #pragma region "METHOD URL VERSION \r\n"
     length = GetLine(sock, buffer, BUFFER_MAX_LENGTH);
-    if (length == 0) {
+    if (length == -1) {
         return false;
     }
     auto v = Split(buffer, " ");
@@ -42,12 +42,11 @@ bool MyEngine::HttpParser::RequestParser(TcpClient &sock, HttpRequest *request) 
     ssize_t body_length = 0;
     while (true) {
         length = GetLine(sock, buffer, BUFFER_MAX_LENGTH);
-        if (length == 0) {
-            puts(strerror(errno));
-            return false;
+        if (length == -1) {
+            break;
         }
         auto argv = Split(buffer, ": ");
-        if (length < 0 || argv[0] == "\n") {
+        if (argv[0] == "\n") {
             break;
         } else if (strcasecmp("content-length", argv[0].c_str()) == 0) {
             body_length = strtol(argv[1].c_str(), nullptr, 10);
@@ -94,9 +93,8 @@ bool MyEngine::HttpParser::ResponseParser(TcpClient &sock, HttpResponse *respons
     while (true) {
         length = GetLine(sock, buffer, BUFFER_MAX_LENGTH);
         if (length == -1) {
-            return false;
+            break;
         }
-
         auto argv = Split(buffer, ": ");
         if (argv[0] == "\n") {
             break;
@@ -126,35 +124,40 @@ bool MyEngine::HttpParser::ResponseParser(TcpClient &sock, HttpResponse *respons
 ssize_t MyEngine::HttpParser::GetLine(MyEngine::TcpClient &sock, char *buf, int size) {
     ssize_t i = 0;
     ssize_t n;
-    char c = '\0';
 
-    while ((i < size - 1) && (c != '\n')) {
+    char c = '\0';
+    while (true) {
         n = sock.recv(&c, 1, 0);
-        if (n > 0) {
-            if (c == '\r') {
-                n = sock.recv(&c, 1, MSG_PEEK);
-                if ((n > 0) && (c == '\n'))
-                    sock.recv(&c, 1, 0);
-                else
-                    c = '\n';
-            }
+        if (n == -1) {
+            return -1;
+        }
+
+        if (c != '\r') {
             buf[i] = c;
             i++;
-        } else
-            c = '\n';
+        } else {
+            buf[i] = '\n';
+            sock.recv(&c, 1, 0);
+            break;
+        }
     }
-    buf[i] = '\0';
+    buf[i + 1] = '\0';
+
     return i;
 }
 
 std::vector<std::string> MyEngine::HttpParser::Split(const std::string &str, const std::string &pattern) {
     std::vector<std::string> res;
-    char buffer[1024];
-    strcpy(buffer, str.c_str());
-    char *p = strtok(buffer, pattern.c_str());
-    res.emplace_back(p);
-    while ((p = strtok(nullptr, pattern.c_str()))) {
-        res.emplace_back(p);
+    std::string::size_type pos1, pos2;
+    pos2 = str.find(pattern);
+    pos1 = 0;
+    while (std::string::npos != pos2) {
+        res.push_back(str.substr(pos1, pos2 - pos1));
+        pos1 = pos2 + pattern.size();
+        pos2 = str.find(pattern, pos1);
     }
+    if (pos1 != str.length())
+        res.push_back(str.substr(pos1));
+
     return res;
 }
