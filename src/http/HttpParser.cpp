@@ -1,3 +1,11 @@
+/**
+ * @file HttpParser.cpp
+ * @author kaoru
+ * @date 2021.8.8
+ * @brief Http 数据转换器实现
+ * @version 0.1
+ */
+
 #include <cassert>
 #include <cstring>
 #include <http/HttpParser.h>
@@ -17,6 +25,9 @@ bool MyEngine::HttpParser::RequestParser(TcpClient &sock, HttpRequest *request) 
         return false;
     }
     auto v = Split(buffer, " ");
+    if(v.empty()){
+        return false;
+    }
     if (v[0] == "GET") {
         request->setMethod(HttpMethod::GET);
     } else if (v[0] == "POST") {
@@ -81,6 +92,9 @@ bool MyEngine::HttpParser::ResponseParser(TcpClient &sock, HttpResponse *respons
         return false;
     }
     auto v = Split(buffer, " ");
+    if(v.empty()){
+        return false;
+    }
     if (v[0] == "HTTP/1.1") {
         response->setHttpVersion(11);
     } else {

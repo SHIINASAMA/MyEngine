@@ -1,3 +1,10 @@
+/**
+ * @file HttpClient.cpp
+ * @author kaoru
+ * @date 2021.8.8
+ * @brief Http 客户端实现
+ * @version 0.1
+ */
 #include <http/HttpClient.h>
 #include <http/HttpParser.h>
 #include <sstream>

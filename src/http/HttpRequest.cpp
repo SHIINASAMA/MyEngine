@@ -1,3 +1,10 @@
+/**
+ * @file HttpRequest.cpp
+ * @author kaoru
+ * @date 2021.8.8
+ * @brief Http 请求实现
+ * @version 0.1
+ */
 #include <http/Http.h>
 #include <sstream>
 

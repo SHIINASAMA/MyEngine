@@ -1,3 +1,10 @@
+/**
+ * @file HttpResponse.h
+ * @author kaoru
+ * @date 2021.8.8
+ * @brief Http 回报实现
+ * @version 0.1
+ */
 #include <http/Http.h>
 #include <sstream>
 

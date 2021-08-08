@@ -1,8 +1,16 @@
+/**
+ * @file App.cpp
+ * @author kaoru
+ * @date 2021.8.8
+ * @brief 应用程序类实现
+ * @version 0.1
+ */
+
 #include <app/App.h>
+#include <app/ErrorServlet.h>
 #include <app/NonsupportMethodServlet.h>
 #include <app/NotFindServlet.h>
 #include <app/SuccessServlet.h>
-#include <app/ErrorServlet.h>
 #include <filesystem>
 #include <fstream>
 #include <http/HttpParser.h>
@@ -54,7 +62,7 @@ const std::map<string, MyEngine::ServletContext, MyEngine::strcmp<>> &MyEngine::
     return this->servletMap;
 }
 
-MyEngine::TcpThread::TcpThread(TcpClient client) {
+MyEngine::TcpThread::TcpThread(const TcpClient& client) {
     this->client = client;
 }
 
@@ -73,6 +81,7 @@ void MyEngine::TcpThread::Main() {
         auto servlet     = dynamic_cast<const HttpServlet *>(servlet_context->second.getServlet());
         auto raw_servlet = const_cast<HttpServlet *>(servlet);
         if (raw_servlet->service(&request, &response)) {
+            printf("请求 Servlet : %s - %s\n", servlet_context->second.getName().c_str() ,servlet_context->second.getServletClassName().c_str());
             auto baseString = response.dump().str();
             client.send(baseString.c_str(), baseString.length(), 0);
         } else {
@@ -86,6 +95,7 @@ void MyEngine::TcpThread::Main() {
         string raw_url = std::filesystem::current_path();
         raw_url.append(request.getUrl());
         if (std::filesystem::exists(raw_url)) {
+            printf("请求文件 : %s\n", raw_url.c_str());
             // 发送文件
             std::ifstream file;
             file.open(raw_url, std::fstream::out | std::fstream::binary);
@@ -105,12 +115,12 @@ void MyEngine::TcpThread::Main() {
                 while (true) {
                     file.read(buffer, 1024);
                     len = file.gcount();
-                    if(len == 0){
+                    if (len == 0) {
                         break;
                     }
                     client.send(buffer, len, 0);
                 }
-            }else{
+            } else {
                 // 服务器内部错误 - 500
                 errorServlet.service(&request, &response);
                 auto baseString = response.dump().str();

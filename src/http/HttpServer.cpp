@@ -1,3 +1,10 @@
+/**
+ * @file HttpServer.cpp
+ * @author kaoru
+ * @date 2021.8.8
+ * @brief Http 服务器类实现
+ * @version 0.1
+ */
 #include <cstring>
 #include <http/HttpParser.h>
 #include <http/HttpServer.h>

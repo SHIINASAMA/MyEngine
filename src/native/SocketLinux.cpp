@@ -1,3 +1,10 @@
+/**
+ * @file SocketLinux.cpp
+ * @author kaoru
+ * @date 2021.8.8
+ * @brief Linux 下的 Socket 实现
+ * @version 0.1
+ */
 #include <fcntl.h>
 #include <native/Socket.h>
 #include <unistd.h>
@@ -80,8 +87,5 @@ socket_t MyEngine::Socket::getSocket() const {
     return this->fd;
 }
 
-MyEngine::Socket::Socket() {}
-
-void MyEngine::Socket::init(socket_t fd) {
-    this->fd = fd;
+MyEngine::Socket::Socket() {
 }
