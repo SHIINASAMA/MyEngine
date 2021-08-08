@@ -31,7 +31,7 @@ class MyServlet2 : public HttpServlet {
     }
 };
 
-int main() {
+int main(int argc, char **argv) {
     App::CreateApp("0.0.0.0", 80);
     auto app = App::GetApp();
     app->regServlet("def_get", "/", new MyServlet0);

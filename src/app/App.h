@@ -22,7 +22,7 @@ namespace MyEngine {
 
     class TcpThread {
     public:
-        explicit TcpThread(socket_t fd);
+        explicit TcpThread(TcpClient client);
         void Main();
 
     protected:

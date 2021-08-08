@@ -126,7 +126,7 @@ ssize_t MyEngine::HttpParser::GetLine(MyEngine::TcpClient &sock, char *buf, int 
     ssize_t n;
 
     char c = '\0';
-    while (true) {
+    while (i < size) {
         n = sock.recv(&c, 1, 0);
         if (n == -1) {
             return -1;

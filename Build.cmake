@@ -22,7 +22,10 @@ set(engine_src
         src/servlet/HttpServlet.cpp
         src/app/App.h
         src/app/App.cpp
-        )
+        src/app/NotFindServlet.h
+        src/app/NonsupportMethodServlet.h
+        src/app/SuccessServlet.h
+        src/app/ErrorServlet.h)
 
 if (UNIX)
     add_library(MyEngineLib ${engine_src} src/native/SocketLinux.cpp)
