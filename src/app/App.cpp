@@ -37,11 +37,7 @@ MyEngine::App *MyEngine::App::GetApp() {
 MyEngine::App::App(const string &ipaddress, unsigned short port) : HttpServer(ipaddress, port) {
 }
 
-MyEngine::App::~App() {
-    delete app;
-}
-
-void MyEngine::App::regServlet(const string &servlet_name, const string &url, MyEngine::Servlet *servlet) {
+void MyEngine::App::regServlet(const string &servlet_name, const string &url, const Servlet::Ptr &servlet) {
     auto config = ServletContext(servlet_name, url, servlet);
     servletMap.emplace(url, config);
 }
@@ -50,7 +46,7 @@ void MyEngine::App::regServlet(const string &servlet_name, const string &url, My
     this->init(10);
     while (true) {
         auto client = this->accept();
-        if (client.good()) {
+        if (client->good()) {
             auto worker = new TcpThread(client);
             std::thread thread(&TcpThread::Main, worker);
             thread.detach();
@@ -62,38 +58,41 @@ const std::map<string, MyEngine::ServletContext, MyEngine::strcmp<>> &MyEngine::
     return this->servletMap;
 }
 
-MyEngine::TcpThread::TcpThread(const TcpClient& client) {
+MyEngine::App::~App() {
+    this->servletMap.clear();
+}
+
+MyEngine::TcpThread::TcpThread(const TcpClient::Ptr &client) {
     this->client = client;
 }
 
 void MyEngine::TcpThread::Main() {
-    HttpRequest request;
-    HttpResponse response;
-    if (!HttpParser::RequestParser(client, &request)) {
-        client.close();
+    HttpRequest::Ptr request   = make_shared<HttpRequest>();
+    HttpResponse::Ptr response = make_shared<HttpResponse>();
+    if (!HttpParser::RequestParser(client, request)) {
+        client->close();
         return;
     }
 
     auto app             = App::GetApp();
     auto servletMap      = app->getMap();
-    auto servlet_context = servletMap.find(request.getUrl());
+    auto servlet_context = servletMap.find(request->getUrl());
     if (servlet_context != servletMap.end()) {
-        auto servlet     = dynamic_cast<const HttpServlet *>(servlet_context->second.getServlet());
-        auto raw_servlet = const_cast<HttpServlet *>(servlet);
-        if (raw_servlet->service(&request, &response)) {
-            printf("请求 Servlet : %s - %s\n", servlet_context->second.getName().c_str() ,servlet_context->second.getServletClassName().c_str());
-            auto baseString = response.dump().str();
-            client.send(baseString.c_str(), baseString.length(), 0);
+        auto servlet = servlet_context->second.getServlet();
+        if (servlet->service(request, response)) {
+            printf("请求 Servlet : %s - %s\n", servlet_context->second.getName().c_str(), servlet_context->second.getServletClassName().c_str());
+            auto baseString = response->dump();
+            client->send(baseString.c_str(), baseString.length(), 0);
         } else {
             // 不支持的方法 - 405
-            nonsupportMethodServlet.service(&request, &response);
-            auto baseString = response.dump().str();
-            client.send(baseString.c_str(), baseString.length(), 0);
+            nonsupportMethodServlet.service(request, response);
+            auto baseString = response->dump();
+            client->send(baseString.c_str(), baseString.length(), 0);
         }
     } else {
         // 查找本地资源
         string raw_url = std::filesystem::current_path();
-        raw_url.append(request.getUrl());
+        raw_url.append(request->getUrl());
         if (std::filesystem::exists(raw_url)) {
             printf("请求文件 : %s\n", raw_url.c_str());
             // 发送文件
@@ -103,10 +102,10 @@ void MyEngine::TcpThread::Main() {
                 file.seekg(0, std::ifstream::end);
                 ssize_t file_len = file.tellg();
 
-                successServlet.service(&request, &response);
-                response.setContentLength(file_len);
-                auto baseString = response.dump().str();
-                client.send(baseString.c_str(), baseString.length(), 0);
+                successServlet.service(request, response);
+                response->setContentLength(file_len);
+                auto baseString = response->dump();
+                client->send(baseString.c_str(), baseString.length(), 0);
 
                 file.clear();
                 file.seekg(0, std::ios::beg);
@@ -118,21 +117,21 @@ void MyEngine::TcpThread::Main() {
                     if (len == 0) {
                         break;
                     }
-                    client.send(buffer, len, 0);
+                    client->send(buffer, len, 0);
                 }
             } else {
                 // 服务器内部错误 - 500
-                errorServlet.service(&request, &response);
-                auto baseString = response.dump().str();
-                client.send(baseString.c_str(), baseString.length(), 0);
+                errorServlet.service(request, response);
+                auto baseString = response->dump();
+                client->send(baseString.c_str(), baseString.length(), 0);
             }
         } else {
             // 未查找到资源 - 404
-            notFindServlet.service(&request, &response);
-            auto baseString = response.dump().str();
-            client.send(baseString.c_str(), baseString.length(), 0);
+            notFindServlet.service(request, response);
+            auto baseString = response->dump();
+            client->send(baseString.c_str(), baseString.length(), 0);
         }
     }
-    client.close();
+    client->close();
     delete this;
 }

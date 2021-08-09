@@ -4,7 +4,7 @@ set(engine_src
         src/socket/TcpClient.cpp
         src/socket/TcpServer.h
         src/socket/TcpServer.cpp
-        src/http/Http.h
+        src/http/HttpRequest.h
         src/http/HttpHeader.cpp
         src/http/HttpRequest.cpp
         src/http/HttpResponse.cpp
@@ -25,7 +25,10 @@ set(engine_src
         src/app/NotFindServlet.h
         src/app/NonsupportMethodServlet.h
         src/app/SuccessServlet.h
-        src/app/ErrorServlet.h)
+        src/app/ErrorServlet.h
+        src/Utility.h
+        src/http/HttpHeader.h
+        src/http/HttpResponse.h)
 
 if (UNIX)
     add_library(MyEngineLib ${engine_src} src/native/SocketLinux.cpp)

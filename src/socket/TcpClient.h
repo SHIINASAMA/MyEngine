@@ -16,6 +16,10 @@ namespace MyEngine {
     class TcpClient : public Socket {
     public:
         /**
+         * @brief 智能指针对象
+         */
+        typedef std::shared_ptr<TcpClient> Ptr;
+        /**
          * 初始化一个 TCP 套接字
          * @param socket Socket 文件描述符
          * @param address 地址

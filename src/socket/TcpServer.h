@@ -15,6 +15,7 @@ namespace MyEngine {
      */
     class TcpServer : public TcpClient {
     public:
+        typedef std::shared_ptr<TcpServer> Ptr;
         /**
          * 初始化一个服务器套接字
          * @param ipaddress IP 地址
@@ -27,6 +28,6 @@ namespace MyEngine {
          * 接收一个客户端 TCP 协议套接字
          * @return TCP 客户端套接字
          */
-        TcpClient accept() const;
+        TcpClient::Ptr accept() const;
     };
 }// namespace MyEngine

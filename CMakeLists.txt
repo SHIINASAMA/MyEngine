@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(MyEngine CXX)
+project(MyEngine)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build)

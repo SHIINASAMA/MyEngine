@@ -1,5 +1,5 @@
-#include <http/Http.h>
 #include <http/HttpParser.h>
+#include <http/HttpRequest.h>
 #include <http/HttpServer.h>
 #include <pthread.h>
 #include <servlet/Servlet.h>
@@ -10,26 +10,27 @@ using namespace MyEngine;
 class MyServlet : Servlet {
 public:
     void init() override {}
-    void service(HttpRequest *request, HttpResponse *response) override {
+    bool service(const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) override {
         string url   = request->getUrl();
         string query = request->getQueryString();
         string body  = "Your request url is \"" + url + "\", Your request query string is \"" + query + "\"";
         response->setBody(body);
-        response->setHeader({"content-length", std::to_string(body.length())});
+        response->setHeader(make_shared<HttpHeaderElement>("content-length", std::to_string(body.length())));
+        return true;
     }
     void destroy() override {}
 };
 
 void *exec(void *client) {
-    auto *tcpClient = (TcpClient *) client;
-    HttpRequest request;
-    HttpResponse response;
-    HttpParser::RequestParser(*tcpClient, &request);
+    auto tcpClient = (TcpClient::Ptr *) &client;
+    HttpRequest::Ptr request;
+    HttpResponse::Ptr response;
+    HttpParser::RequestParser(*tcpClient, request);
     MyServlet servlet{};
-    servlet.service(&request, &response);
-    auto baseString = response.dump().str();
-    tcpClient->send(baseString.c_str(), baseString.length(), 0);
-    tcpClient->close();
+    servlet.service(request, response);
+    auto baseString = response->dump();
+    (*tcpClient)->send(baseString.c_str(), baseString.length(), 0);
+    (*tcpClient)->close();
     return nullptr;
 }
 

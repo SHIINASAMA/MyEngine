@@ -6,8 +6,8 @@
  * @version 0.1
  */
 #pragma once
-#include <http/Http.h>
 #include <http/HttpClient.h>
+#include <http/HttpRequest.h>
 #include <socket/TcpServer.h>
 
 using std::string;
@@ -41,7 +41,7 @@ namespace MyEngine {
          * 接收一个 TCP 客户端
          * @return TCP 客户端
          */
-        TcpClient accept();
+        TcpClient::Ptr accept();
         /**
          * 关闭服务器
          */

@@ -15,10 +15,10 @@ namespace MyEngine {
      */
     class ErrorServlet : public HttpServlet {
     public:
-        bool service(HttpRequest *request, HttpResponse *response) override {
+        bool service(const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) override {
             response->setStateCode(500);
             response->setServer("My Engine");
-            response->setHeader(new HttpHeader{"error", strerror(errno)});
+            response->setHeader(make_shared<HttpHeaderElement>("error", strerror(errno)));
             return true;
         }
     };

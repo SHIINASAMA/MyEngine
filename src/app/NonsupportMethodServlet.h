@@ -15,12 +15,11 @@ namespace MyEngine {
      */
     class NonsupportMethodServlet : public HttpServlet {
     public:
-        bool service(HttpRequest *request, HttpResponse *response) override{
+        bool service(const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) override {
             response->setStateCode(405);
-            response->setHeader(new HttpHeader {"Access-Control-Allow-Methods", "GET, POST"});
+            response->setHeader(make_shared<HttpHeaderElement>("Access-Control-Allow-Methods", "GET, POST"));
             response->setServer("My Engine");
             return true;
         }
     };
-}
-
+}// namespace MyEngine

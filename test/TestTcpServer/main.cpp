@@ -11,8 +11,8 @@ int main() {
     server.bind();
     server.listen(10);
     auto client = server.accept();
-    auto len = client.send(string, 32, 0);
-    client.close();
+    auto len = client->send(string, 32, 0);
+    client->close();
     printf("send message %ld : %s\n", len, string);
     return 0;
 }

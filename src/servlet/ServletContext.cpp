@@ -7,16 +7,12 @@
  */
 #include <servlet/ServletContext.h>
 
-MyEngine::ServletContext::ServletContext(const string &servlet_name, const string &url, MyEngine::Servlet *servlet) {
+#include <utility>
+
+MyEngine::ServletContext::ServletContext(const string &servlet_name, const string &url, const MyEngine::Servlet::Ptr &servlet) {
     this->name    = servlet_name;
     this->url     = url;
     this->servlet = servlet;
-}
-
-MyEngine::ServletContext::~ServletContext() {
-    if (!servlet) {
-        delete servlet;
-    }
 }
 
 string MyEngine::ServletContext::getName() const {
@@ -31,7 +27,7 @@ string MyEngine::ServletContext::getServletClassName() const {
     return servlet->getClassName();
 }
 
-const MyEngine::Servlet *MyEngine::ServletContext::getServlet() const {
+MyEngine::Servlet::Ptr MyEngine::ServletContext::getServlet() const {
     return servlet;
 }
 
@@ -39,7 +35,7 @@ void MyEngine::ServletContext::servletInit() {
     servlet->init();
 }
 
-void MyEngine::ServletContext::servletService(MyEngine::HttpRequest *request, MyEngine::HttpResponse *response) {
+void MyEngine::ServletContext::servletService(const MyEngine::HttpRequest::Ptr& request, const MyEngine::HttpResponse::Ptr& response) {
     servlet->service(request, response);
 }
 

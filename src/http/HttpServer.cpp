@@ -36,7 +36,7 @@ bool HttpServer::init(int backlog) {
     return true;
 }
 
-MyEngine::TcpClient HttpServer::accept() {
+MyEngine::TcpClient::Ptr HttpServer::accept() {
     return TcpServer::accept();
 }
 

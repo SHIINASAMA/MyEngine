@@ -16,6 +16,11 @@ namespace MyEngine {
     class HttpServlet : public Servlet {
     public:
         /**
+         * @brief 智能指针对象
+         */
+        typedef shared_ptr<HttpServlet> Ptr;
+
+        /**
          * 执行前
          */
         void init() override;
@@ -25,7 +30,7 @@ namespace MyEngine {
          * @param response 回报
          * @return 是否执行成功
          */
-        bool service(HttpRequest *request, HttpResponse *response) override;
+        bool service(const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) override;
         /**
          * 执行后
          */
@@ -36,12 +41,12 @@ namespace MyEngine {
          * @param request 请求
          * @param response 回报
          */
-        virtual void doGet(HttpRequest *request, HttpResponse *response);
+        virtual void doGet(const MyEngine::HttpRequest::Ptr &request, const MyEngine::HttpResponse::Ptr &response);
         /**
          * 执行 Post 请求
          * @param request 请求
          * @param response 回报
          */
-        virtual void doPost(HttpRequest *request, HttpResponse *response);
+        virtual void doPost(const MyEngine::HttpRequest::Ptr &request, const MyEngine::HttpResponse::Ptr &response);
     };
 }// namespace MyEngine

@@ -21,11 +21,11 @@ namespace MyEngine{
          * @param url URL
          * @param servlet Servlet 实例
          */
-        ServletContext(const string &servlet_name, const string &url, Servlet *servlet);
+        ServletContext(const string &servlet_name, const string &url, const Servlet::Ptr &servlet);
         /**
          * 默认析构函数
          */
-        virtual ~ServletContext();
+        virtual ~ServletContext() = default;
 
         /**
          * 获取服务名称
@@ -46,7 +46,7 @@ namespace MyEngine{
          * 获取 Servlet 实例
          * @return Servlet 实例
          */
-        const Servlet *getServlet() const;
+        Servlet::Ptr getServlet() const;
 
         /**
          * Servlet 执行前
@@ -59,7 +59,7 @@ namespace MyEngine{
          * @param response 回报
          * @deprecated 没有必要使用该函数
          */
-        void servletService(HttpRequest *request, HttpResponse *response);
+        void servletService(const HttpRequest::Ptr& request, const MyEngine::HttpResponse::Ptr& response);
         /**
          * 执行后
          * @deprecated 没有必要使用该函数
@@ -69,6 +69,6 @@ namespace MyEngine{
     private:
         string name;
         string url;
-        Servlet *servlet;
+        Servlet::Ptr servlet{};
     };
 }

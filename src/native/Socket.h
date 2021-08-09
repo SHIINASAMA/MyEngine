@@ -13,6 +13,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <memory>
 
 typedef int socket_t;
 #endif
@@ -24,6 +25,10 @@ namespace MyEngine {
      */
     class Socket {
     public:
+        /**
+         * @brief 智能指针对象
+         */
+        typedef std::shared_ptr<Socket> Ptr;
         /**
          * 初始化 Socket
          * @param socket 文件描述符

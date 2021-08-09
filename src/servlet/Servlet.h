@@ -1,12 +1,13 @@
 /**
  * @file Servlet.h
  * @author kaoru
- * @date 2021.8.8
+ * @date 2021.8.9
  * @brief Servlet 类
  * @version 0.1
  */
 #pragma once
-#include <http/Http.h>
+#include <http/HttpRequest.h>
+#include <http/HttpResponse.h>
 
 namespace MyEngine{
 
@@ -15,6 +16,11 @@ namespace MyEngine{
      */
     class Servlet {
     public:
+        /**
+         * @brief 智能指针对象
+         */
+        typedef shared_ptr<Servlet> Ptr;
+
         /**
          * 默认构造函数
          */
@@ -34,7 +40,7 @@ namespace MyEngine{
          * @param response 回报
          * @return 执行结果
          */
-        virtual bool service(HttpRequest *request, HttpResponse *response) = 0;
+        virtual bool service(const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) = 0;
         /**
          * 执行后
          */

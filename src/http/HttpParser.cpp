@@ -15,7 +15,7 @@
 
 using std::string;
 
-bool MyEngine::HttpParser::RequestParser(TcpClient &sock, HttpRequest *request) {
+bool MyEngine::HttpParser::RequestParser(const TcpClient::Ptr &sock, const HttpRequest::Ptr &request) {
     char buffer[BUFFER_MAX_LENGTH]{0};
     ssize_t length;
 
@@ -25,7 +25,7 @@ bool MyEngine::HttpParser::RequestParser(TcpClient &sock, HttpRequest *request) 
         return false;
     }
     auto v = Split(buffer, " ");
-    if(v.empty()){
+    if (v.empty()) {
         return false;
     }
     if (v[0] == "GET") {
@@ -62,7 +62,7 @@ bool MyEngine::HttpParser::RequestParser(TcpClient &sock, HttpRequest *request) 
         } else if (strcasecmp("content-length", argv[0].c_str()) == 0) {
             body_length = strtol(argv[1].c_str(), nullptr, 10);
         }
-        request->setHeader(new HttpHeader{argv[0], argv[1].substr(0, argv[1].length() - 1)});
+        request->setHeader(make_shared<HttpHeaderElement>(argv[0], argv[1].substr(0, argv[1].length() - 1)));
     }
 #pragma endregion
 #pragma region BODY
@@ -72,7 +72,7 @@ bool MyEngine::HttpParser::RequestParser(TcpClient &sock, HttpRequest *request) 
             if (body_length == 0) {
                 break;
             }
-            length = sock.recv(buffer, BUFFER_MAX_LENGTH, 0);
+            length = sock->recv(buffer, BUFFER_MAX_LENGTH, 0);
             stream.write(buffer, length);
             body_length -= length;
         }
@@ -82,7 +82,7 @@ bool MyEngine::HttpParser::RequestParser(TcpClient &sock, HttpRequest *request) 
     return true;
 }
 
-bool MyEngine::HttpParser::ResponseParser(TcpClient &sock, HttpResponse *response) {
+bool MyEngine::HttpParser::ResponseParser(const TcpClient::Ptr &sock, const HttpResponse::Ptr &response) {
     char buffer[BUFFER_MAX_LENGTH]{0};
     ssize_t length;
 
@@ -92,7 +92,7 @@ bool MyEngine::HttpParser::ResponseParser(TcpClient &sock, HttpResponse *respons
         return false;
     }
     auto v = Split(buffer, " ");
-    if(v.empty()){
+    if (v.empty()) {
         return false;
     }
     if (v[0] == "HTTP/1.1") {
@@ -115,7 +115,7 @@ bool MyEngine::HttpParser::ResponseParser(TcpClient &sock, HttpResponse *respons
         } else if (strcasecmp("content-length", argv[0].c_str()) == 0) {
             body_length = strtol(argv[1].c_str(), nullptr, 10);
         }
-        response->setHeader(new HttpHeader{argv[0], argv[1].substr(0, argv[1].length() - 1)});
+        response->setHeader(make_shared<HttpHeaderElement>(argv[0], argv[1].substr(0, argv[1].length() - 1)));
     }
 #pragma endregion
 #pragma region BODY
@@ -125,7 +125,7 @@ bool MyEngine::HttpParser::ResponseParser(TcpClient &sock, HttpResponse *respons
             if (body_length == 0) {
                 break;
             }
-            length = sock.recv(buffer, BUFFER_MAX_LENGTH, 0);
+            length = sock->recv(buffer, BUFFER_MAX_LENGTH, 0);
             stream.write(buffer, length);
             body_length -= length;
         }
@@ -135,13 +135,13 @@ bool MyEngine::HttpParser::ResponseParser(TcpClient &sock, HttpResponse *respons
     return true;
 }
 
-ssize_t MyEngine::HttpParser::GetLine(MyEngine::TcpClient &sock, char *buf, int size) {
+ssize_t MyEngine::HttpParser::GetLine(const MyEngine::TcpClient::Ptr& sock, char *buf, int size) {
     ssize_t i = 0;
     ssize_t n;
 
     char c = '\0';
     while (i < size) {
-        n = sock.recv(&c, 1, 0);
+        n = sock->recv(&c, 1, 0);
         if (n == -1) {
             return -1;
         }
@@ -151,7 +151,7 @@ ssize_t MyEngine::HttpParser::GetLine(MyEngine::TcpClient &sock, char *buf, int 
             i++;
         } else {
             buf[i] = '\n';
-            sock.recv(&c, 1, 0);
+            sock->recv(&c, 1, 0);
             break;
         }
     }

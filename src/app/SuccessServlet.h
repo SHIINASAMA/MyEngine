@@ -15,7 +15,7 @@ namespace MyEngine{
      */
     class SuccessServlet : public HttpServlet{
     public:
-        bool service(HttpRequest *request, HttpResponse *response) override{
+        bool service(const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) override{
             return HttpServlet::service(request, response);
         }
     };
