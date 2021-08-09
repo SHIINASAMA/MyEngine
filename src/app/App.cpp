@@ -24,6 +24,21 @@ MyEngine::ErrorServlet errorServlet;
 
 MyEngine::App *MyEngine::App::app;
 
+bool IsFileExistent(const std::filesystem::path &path) {
+    std::error_code error;
+    auto file_status = std::filesystem::status(path, error);
+    if (error) {
+        return false;
+    }
+    if (!std::filesystem::exists(file_status)) {
+        return false;
+    }
+    if (std::filesystem::is_directory(file_status)) {
+        return false;
+    }
+    return true;
+}
+
 void MyEngine::App::CreateApp(const string &ipaddress, unsigned int port) {
     if (!app) {
         app = new App(ipaddress, port);
@@ -66,6 +81,11 @@ MyEngine::TcpThread::TcpThread(const TcpClient::Ptr &client) {
     this->client = client;
 }
 
+inline bool exists_test0(const std::string &name) {
+    std::ifstream f(name.c_str());
+    return f.good();
+}
+
 void MyEngine::TcpThread::Main() {
     HttpRequest::Ptr request   = make_shared<HttpRequest>();
     HttpResponse::Ptr response = make_shared<HttpResponse>();
@@ -93,7 +113,7 @@ void MyEngine::TcpThread::Main() {
         // 查找本地资源
         string raw_url = std::filesystem::current_path();
         raw_url.append(request->getUrl());
-        if (std::filesystem::exists(raw_url)) {
+        if (IsFileExistent(raw_url)) {
             printf("请求文件 : %s\n", raw_url.c_str());
             // 发送文件
             std::ifstream file;
@@ -126,6 +146,7 @@ void MyEngine::TcpThread::Main() {
                 client->send(baseString.c_str(), baseString.length(), 0);
             }
         } else {
+            auto e = strerror(errno);
             // 未查找到资源 - 404
             notFindServlet.service(request, response);
             auto baseString = response->dump();

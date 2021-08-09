@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
     App::CreateApp("0.0.0.0", 8000);
     auto app = App::GetApp();
     app->regServlet("def_get", "/", make_shared<MyServlet0>());
-//    app->regServlet("hello", "/hello_page", make_shared<MyServlet1>());
-//    app->regServlet("post_test", "/post_page", make_shared<MyServlet2>());
+    app->regServlet("hello", "/hello_page", make_shared<MyServlet1>());
+    app->regServlet("post_test", "/post_page", make_shared<MyServlet2>());
     app->exec();
 }
