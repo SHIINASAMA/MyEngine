@@ -6,6 +6,7 @@
  * @version 0.1
  */
 
+#include <Utility.h>
 #include <app/App.h>
 #include <app/ErrorServlet.h>
 #include <app/NonsupportMethodServlet.h>
@@ -15,7 +16,6 @@
 #include <fstream>
 #include <http/HttpParser.h>
 #include <servlet/HttpServlet.h>
-#include <thread>
 
 MyEngine::NotFindServlet notFindServlet;
 MyEngine::NonsupportMethodServlet nonsupportMethodServlet;
@@ -42,6 +42,7 @@ bool IsFileExistent(const std::filesystem::path &path) {
 }
 
 static void Main(const TcpClient::Ptr &client) {
+//    LOG_INFO("接入连接");
     auto request  = make_shared<HttpRequest>();
     auto response = make_shared<HttpResponse>();
     if (!HttpParser::RequestParser(client, request)) {
@@ -55,11 +56,12 @@ static void Main(const TcpClient::Ptr &client) {
     if (servlet_context != servletMap.end()) {
         auto servlet = servlet_context->second.getServlet();
         if (servlet->service(request, response)) {
-            printf("请求 Servlet : %s - %s\n", servlet_context->second.getName().c_str(), servlet_context->second.getServletClassName().c_str());
+            LOG_INFO("请求Servlet -> (friendly_name)%s - %s\n", servlet_context->second.getName().c_str(), servlet_context->second.getServletClassName().c_str());
             auto baseString = response->dump();
             client->send(baseString.c_str(), baseString.length(), 0);
         } else {
             // 不支持的方法 - 405
+            LOG_INFO("不支持的Http方法");
             nonsupportMethodServlet.service(request, response);
             auto baseString = response->dump();
             client->send(baseString.c_str(), baseString.length(), 0);
@@ -69,7 +71,7 @@ static void Main(const TcpClient::Ptr &client) {
         string raw_url = std::filesystem::current_path();
         raw_url.append(request->getUrl());
         if (IsFileExistent(raw_url)) {
-            printf("请求文件 : %s\n", raw_url.c_str());
+            LOG_INFO("请求资源 -> %s", raw_url.c_str());
             // 发送文件
             std::ifstream file;
             file.open(raw_url, std::fstream::out | std::fstream::binary);
@@ -96,12 +98,14 @@ static void Main(const TcpClient::Ptr &client) {
                 }
             } else {
                 // 服务器内部错误 - 500
+                LOG_WARN("服务器内部错误-505 -> %s", raw_url.c_str());
                 errorServlet.service(request, response);
                 auto baseString = response->dump();
                 client->send(baseString.c_str(), baseString.length(), 0);
             }
         } else {
             // 未查找到资源 - 404
+            LOG_WARN("请求资源不存在-404 -> %s", raw_url.c_str());
             notFindServlet.service(request, response);
             auto baseString = response->dump();
             client->send(baseString.c_str(), baseString.length(), 0);
@@ -146,7 +150,7 @@ MyEngine::App::~App() {
     this->servletMap.clear();
 }
 
-void App::shutdown(){
+void App::shutdown() {
     this->isShutdown = true;
     HttpServer::shutdown();
     pool.shutdown();

@@ -30,8 +30,19 @@ set(engine_src
         src/http/HttpHeader.h
         src/http/HttpResponse.h
         src/thread/ThreadPool.h
+        src/thread/Thread.cpp
 #        src/thread/SafeQueue.h
-        )
+        src/log/LogEvent.h
+        src/log/LogEvent.cpp
+        src/log/LogFormatter.h
+        src/log/Logger.cpp
+        src/log/Logger.h
+        src/log/LogAppender.h
+        src/log/LogAppender.cpp
+        src/log/ConsoleFormatter.cpp
+        src/log/ConsoleFormatter.h
+        src/log/ConsoleAppender.cpp
+        src/log/ConsoleAppender.h)
 
 if (UNIX)
     add_library(MyEngineLib ${engine_src} src/native/SocketLinux.cpp)
@@ -54,3 +65,4 @@ add_test(TestHttpClient test/TestHttpClient/main.cpp)
 add_test(TestServlet test/TestServlet/main.cpp)
 add_test(TestApp test/TestApp/main.cpp)
 add_test(TestThreadPool test/TestThreadPool/main.cpp)
+add_test(TestLogger test/TestLogger/main.cpp)

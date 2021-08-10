@@ -6,10 +6,10 @@
  * @version 0.1
  */
 #pragma once
+#include <atomic>
 #include <http/HttpServer.h>
 #include <servlet/ServletContext.h>
 #include <thread/ThreadPool.h>
-#include <atomic>
 
 namespace MyEngine {
 
@@ -42,23 +42,22 @@ namespace MyEngine {
          */
         void start();
         /**
-         * 服务函数
-         */
-        void exec();
-        /**
          * 获取 Servlet 映射表
          * @return Servlet 映射表
          */
         const std::map<string, ServletContext, strcmp<>> &getMap() const;
-
+        /**
+         * 关闭服务
+         */
         void shutdown() override;
 
     private:
+        void exec();
         std::atomic_bool isShutdown = false;
         App(const string &ipaddress, unsigned short port);
         ~App() override;
         static App *app;
         std::map<string, ServletContext, strcmp<>> servletMap;
-        ThreadPool pool{8};
+        ThreadPool pool{"AppThreadPool", 16};
     };
 }// namespace MyEngine
