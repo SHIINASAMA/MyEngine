@@ -9,6 +9,7 @@
 #include <http/HttpServer.h>
 #include <servlet/ServletContext.h>
 #include <thread/ThreadPool.h>
+#include <atomic>
 
 namespace MyEngine {
 
@@ -37,17 +38,23 @@ namespace MyEngine {
          */
         void regServlet(const string &servlet_name, const string &url, const Servlet::Ptr &servlet);
         /**
-         * 启动服务
-         * @warning 无限循环
+         * 启动函数
          */
-        [[noreturn]] void exec();
+        void start();
+        /**
+         * 服务函数
+         */
+        void exec();
         /**
          * 获取 Servlet 映射表
          * @return Servlet 映射表
          */
         const std::map<string, ServletContext, strcmp<>> &getMap() const;
 
+        void shutdown() override;
+
     private:
+        std::atomic_bool isShutdown = false;
         App(const string &ipaddress, unsigned short port);
         ~App() override;
         static App *app;

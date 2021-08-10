@@ -42,7 +42,7 @@ namespace MyEngine {
          * @return TCP 客户端
          */
         TcpClient::Ptr accept();
-        /**
+        virtual /**
          * 关闭服务器
          */
         void shutdown();

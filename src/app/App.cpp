@@ -128,9 +128,9 @@ void MyEngine::App::regServlet(const string &servlet_name, const string &url, co
     servletMap.emplace(url, config);
 }
 
-[[noreturn]] void MyEngine::App::exec() {
+void MyEngine::App::exec() {
     this->init(10);
-    while (true) {
+    while (!this->isShutdown) {
         auto client = this->accept();
         if (client->good()) {
             pool.execute(Main, client);
@@ -144,4 +144,14 @@ const std::map<string, MyEngine::ServletContext, MyEngine::strcmp<>> &MyEngine::
 
 MyEngine::App::~App() {
     this->servletMap.clear();
+}
+
+void App::shutdown(){
+    this->isShutdown = true;
+    HttpServer::shutdown();
+    pool.shutdown();
+}
+
+void App::start() {
+    std::thread(&App::exec, this).detach();
 }
