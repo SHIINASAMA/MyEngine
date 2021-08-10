@@ -52,6 +52,6 @@ namespace MyEngine {
         ~App() override;
         static App *app;
         std::map<string, ServletContext, strcmp<>> servletMap;
-        ThreadPool pool{1};
+        ThreadPool pool{8};
     };
 }// namespace MyEngine

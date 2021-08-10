@@ -41,11 +41,7 @@ bool IsFileExistent(const std::filesystem::path &path) {
     return true;
 }
 
-void Main(void *arg) {
-    auto sock   = (socket_t *) arg;
-    auto client = make_shared<TcpClient>(*sock);
-    delete sock;
-
+static void Main(const TcpClient::Ptr &client) {
     auto request  = make_shared<HttpRequest>();
     auto response = make_shared<HttpResponse>();
     if (!HttpParser::RequestParser(client, request)) {
@@ -125,7 +121,6 @@ MyEngine::App *MyEngine::App::GetApp() {
 }
 
 MyEngine::App::App(const string &ipaddress, unsigned short port) : HttpServer(ipaddress, port) {
-    this->pool.init();
 }
 
 void MyEngine::App::regServlet(const string &servlet_name, const string &url, const Servlet::Ptr &servlet) {
@@ -138,7 +133,7 @@ void MyEngine::App::regServlet(const string &servlet_name, const string &url, co
     while (true) {
         auto client = this->accept();
         if (client->good()) {
-            pool.commit(make_shared<ThreadPool::Task>(Main, (void *) new socket_t(client->getSocket())));
+            pool.execute(Main, client);
         }
     }
 }

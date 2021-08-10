@@ -29,9 +29,9 @@ set(engine_src
         src/Utility.h
         src/http/HttpHeader.h
         src/http/HttpResponse.h
-        src/thread/ThreadPool.cpp
         src/thread/ThreadPool.h
-        src/thread/SafeQueue.h)
+#        src/thread/SafeQueue.h
+        )
 
 if (UNIX)
     add_library(MyEngineLib ${engine_src} src/native/SocketLinux.cpp)
@@ -53,6 +53,6 @@ add_test(TestHttpServer test/TestHttpServer/main.cpp)
 add_test(TestHttpClient test/TestHttpClient/main.cpp)
 add_test(TestServlet test/TestServlet/main.cpp)
 add_test(TestApp test/TestApp/main.cpp)
-#add_test(TestThreadPool test/TestThreadPool/main.cpp)
-add_executable(TestThreadPool test/TestThreadPool/main.cpp)
-target_link_libraries(TestThreadPool MyEngineLib)
+add_test(TestThreadPool test/TestThreadPool/main.cpp)
+#add_executable(TestThreadPool test/TestThreadPool/main.cpp)
+#target_link_libraries(TestThreadPool MyEngineLib)
