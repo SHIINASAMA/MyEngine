@@ -24,6 +24,8 @@ MyEngine::ErrorServlet errorServlet;
 
 MyEngine::App *MyEngine::App::app;
 
+using namespace MyEngine;
+
 bool IsFileExistent(const std::filesystem::path &path) {
     std::error_code error;
     auto file_status = std::filesystem::status(path, error);
@@ -39,56 +41,13 @@ bool IsFileExistent(const std::filesystem::path &path) {
     return true;
 }
 
-void MyEngine::App::CreateApp(const string &ipaddress, unsigned int port) {
-    if (!app) {
-        app = new App(ipaddress, port);
-    }
-}
+void Main(void *arg) {
+    auto sock   = (socket_t *) arg;
+    auto client = make_shared<TcpClient>(*sock);
+    delete sock;
 
-MyEngine::App *MyEngine::App::GetApp() {
-    return app;
-}
-
-MyEngine::App::App(const string &ipaddress, unsigned short port) : HttpServer(ipaddress, port) {
-}
-
-void MyEngine::App::regServlet(const string &servlet_name, const string &url, const Servlet::Ptr &servlet) {
-    auto config = ServletContext(servlet_name, url, servlet);
-    servletMap.emplace(url, config);
-}
-
-[[noreturn]] void MyEngine::App::exec() {
-    this->init(10);
-    while (true) {
-        auto client = this->accept();
-        if (client->good()) {
-            auto worker = new TcpThread(client);
-            std::thread thread(&TcpThread::Main, worker);
-            thread.detach();
-        }
-    }
-}
-
-const std::map<string, MyEngine::ServletContext, MyEngine::strcmp<>> &MyEngine::App::getMap() const {
-    return this->servletMap;
-}
-
-MyEngine::App::~App() {
-    this->servletMap.clear();
-}
-
-MyEngine::TcpThread::TcpThread(const TcpClient::Ptr &client) {
-    this->client = client;
-}
-
-inline bool exists_test0(const std::string &name) {
-    std::ifstream f(name.c_str());
-    return f.good();
-}
-
-void MyEngine::TcpThread::Main() {
-    HttpRequest::Ptr request   = make_shared<HttpRequest>();
-    HttpResponse::Ptr response = make_shared<HttpResponse>();
+    auto request  = make_shared<HttpRequest>();
+    auto response = make_shared<HttpResponse>();
     if (!HttpParser::RequestParser(client, request)) {
         client->close();
         return;
@@ -146,7 +105,6 @@ void MyEngine::TcpThread::Main() {
                 client->send(baseString.c_str(), baseString.length(), 0);
             }
         } else {
-            auto e = strerror(errno);
             // 未查找到资源 - 404
             notFindServlet.service(request, response);
             auto baseString = response->dump();
@@ -154,5 +112,41 @@ void MyEngine::TcpThread::Main() {
         }
     }
     client->close();
-    delete this;
+}
+
+void MyEngine::App::CreateApp(const string &ipaddress, unsigned int port) {
+    if (!app) {
+        app = new App(ipaddress, port);
+    }
+}
+
+MyEngine::App *MyEngine::App::GetApp() {
+    return app;
+}
+
+MyEngine::App::App(const string &ipaddress, unsigned short port) : HttpServer(ipaddress, port) {
+    this->pool.init();
+}
+
+void MyEngine::App::regServlet(const string &servlet_name, const string &url, const Servlet::Ptr &servlet) {
+    auto config = ServletContext(servlet_name, url, servlet);
+    servletMap.emplace(url, config);
+}
+
+[[noreturn]] void MyEngine::App::exec() {
+    this->init(10);
+    while (true) {
+        auto client = this->accept();
+        if (client->good()) {
+            pool.commit(make_shared<ThreadPool::Task>(Main, (void *) new socket_t(client->getSocket())));
+        }
+    }
+}
+
+const std::map<string, MyEngine::ServletContext, MyEngine::strcmp<>> &MyEngine::App::getMap() const {
+    return this->servletMap;
+}
+
+MyEngine::App::~App() {
+    this->servletMap.clear();
 }

@@ -30,6 +30,11 @@ namespace MyEngine {
          */
         typedef std::shared_ptr<Socket> Ptr;
         /**
+         * 创建临时对象
+         * @param socket 文件描述符
+         */
+        explicit Socket(socket_t socket);
+        /**
          * 初始化 Socket
          * @param socket 文件描述符
          * @param address 地址信息
@@ -44,7 +49,7 @@ namespace MyEngine {
         /**
          * 默认初始化 Socket
          */
-        Socket();
+        Socket() = default;
         /**
          * 默认析构
          */

@@ -34,7 +34,7 @@ bind()          : bool
 listen()        : bool
 accept()        : socket_t
 close()         : bool
-shutdown()      : bool
+isShutdown()      : bool
 setsockopt()    : bool
 ```
 

@@ -28,4 +28,7 @@ bool MyEngine::TcpClient::bind() const {
     return Socket::bind((sockaddr *) &address, sizeof(address));
 }
 
+MyEngine::TcpClient::TcpClient(socket_t socket) : Socket(socket) {
+}
+
 MyEngine::TcpClient::TcpClient() = default;

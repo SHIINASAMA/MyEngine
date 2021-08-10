@@ -87,5 +87,5 @@ socket_t MyEngine::Socket::getSocket() const {
     return this->fd;
 }
 
-MyEngine::Socket::Socket() {
+MyEngine::Socket::Socket(socket_t socket) : fd(socket) {
 }

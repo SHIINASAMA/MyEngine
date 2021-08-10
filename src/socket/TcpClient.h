@@ -32,6 +32,11 @@ namespace MyEngine {
          */
         TcpClient(const char *ipaddress, unsigned short port);
         /**
+         * 创建临时对象
+         * @param socket 文件描述符
+         */
+        TcpClient(socket_t socket);
+        /**
          * 默认初始化函数
          */
         TcpClient();
