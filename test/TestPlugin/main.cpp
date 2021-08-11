@@ -5,7 +5,7 @@
 using namespace MyEngine;
 
 int main() {
-    auto p = std::make_shared<Plugin>("/home/kaoru/MyEngine/build/libPlugin.so");
+    auto p = std::make_shared<Plugin>("./libPlugin.so");
     if (!p->open()) {
         puts(dlerror());
         return -1;

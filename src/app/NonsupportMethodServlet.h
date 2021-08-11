@@ -18,7 +18,6 @@ namespace MyEngine {
         bool service(const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) override {
             response->setStateCode(405);
             response->setHeader(make_shared<HttpHeaderElement>("Access-Control-Allow-Methods", "GET, POST"));
-            response->setServer("My Engine");
             return true;
         }
     };

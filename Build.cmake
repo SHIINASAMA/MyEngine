@@ -23,11 +23,6 @@ function(add_plugin plugin_name)
     add_library(${ARGV0} SHARED ${ARGN} ${PluginSrc})
 endfunction(add_plugin)
 
-function(add_exec exec_name)
-    add_executable(${exec_name} ${ARGN})
-    target_link_libraries(${exec_name} MyEngine)
-endfunction(add_exec)
-
 # 测试文件
 add_test(TestTcpClient test/TestTcpClient/main.cpp)
 add_test(TestTcpServer test/TestTcpServer/main.cpp)
@@ -41,4 +36,16 @@ add_test(TestPlugin test/TestPlugin/main.cpp)
 add_plugin(Plugin test/TestPlugin/TestServlet.h test/TestPlugin/TestServlet.cpp)
 
 # 工具文件
-add_exec(PluginManifestViewer kit/PluginManifestViewer/main.cpp)
+add_executable(PluginManifestViewer
+        kit/PluginManifestViewer/main.cpp
+        src/servlet/Servlet.h
+        src/servlet/Servlet.cpp
+        src/servlet/HttpServlet.h
+        src/servlet/HttpServlet.cpp
+        src/plugin/Plugin.h
+        src/plugin/Plugin.cpp)
+target_link_libraries(PluginManifestViewer dl)
+
+# 服务器本体
+add_executable(Server server/main.cpp)
+target_link_libraries(Server MyEngine)

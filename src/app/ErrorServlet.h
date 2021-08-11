@@ -17,7 +17,6 @@ namespace MyEngine {
     public:
         bool service(const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) override {
             response->setStateCode(500);
-            response->setServer("My Engine");
             response->setHeader(make_shared<HttpHeaderElement>("error", strerror(errno)));
             return true;
         }

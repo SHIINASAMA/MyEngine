@@ -17,7 +17,6 @@ namespace MyEngine {
     public:
         bool service(const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) override{
             response->setStateCode(404);
-            response->setServer("My Engine");
             return true;
         }
     };

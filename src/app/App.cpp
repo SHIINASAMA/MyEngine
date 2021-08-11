@@ -42,7 +42,7 @@ bool IsFileExistent(const std::filesystem::path &path) {
 }
 
 static void Main(const TcpClient::Ptr &client) {
-//    LOG_INFO("接入连接");
+    //    LOG_INFO("接入连接");
     auto request  = make_shared<HttpRequest>();
     auto response = make_shared<HttpResponse>();
     if (!HttpParser::RequestParser(client, request)) {
@@ -50,8 +50,9 @@ static void Main(const TcpClient::Ptr &client) {
         return;
     }
 
-    auto app             = App::GetApp();
-    auto servletMap      = app->getMap();
+    auto app        = App::GetApp();
+    auto servletMap = app->getMap();
+    response->setServer(app->getServerName());
     auto servlet_context = servletMap.find(request->getUrl());
     if (servlet_context != servletMap.end()) {
         auto servlet = servlet_context->second.getServlet();
@@ -69,7 +70,7 @@ static void Main(const TcpClient::Ptr &client) {
     } else {
         // 查找本地资源
         string raw_url = std::filesystem::current_path();
-        raw_url.append(request->getUrl());
+        raw_url += app->getWebDir() + request->getUrl();
         if (IsFileExistent(raw_url)) {
             LOG_INFO("请求资源 -> %s", raw_url.c_str());
             // 发送文件
@@ -114,18 +115,17 @@ static void Main(const TcpClient::Ptr &client) {
     client->close();
 }
 
-void MyEngine::App::CreateApp(const string &ipaddress, unsigned int port) {
-    if (!app) {
-        app = new App(ipaddress, port);
-    }
+MyEngine::App::App(const ServerConfig::Ptr &config)
+    : HttpServer(config->ipaddress, config->port), serverConfig(config) {
+    this->pool = new ThreadPool(config->threadPoolConfig.name, config->threadPoolConfig.threads);
+    pthread_rwlock_init(&this->lock, nullptr);
+    LOG_INFO("服务器 - \"%s\" 启动, Listen {%s:%d}", config->name.c_str(), config->ipaddress.c_str(), config->port);
 }
 
 MyEngine::App *MyEngine::App::GetApp() {
     return app;
 }
 
-MyEngine::App::App(const string &ipaddress, unsigned short port) : HttpServer(ipaddress, port) {
-}
 
 void MyEngine::App::regServlet(const string &servlet_name, const string &url, const Servlet::Ptr &servlet) {
     auto config = ServletContext(servlet_name, url, servlet);
@@ -137,7 +137,7 @@ void MyEngine::App::exec() {
     while (!this->isShutdown) {
         auto client = this->accept();
         if (client->good()) {
-            pool.execute(Main, client);
+            pool->execute(Main, client);
         }
     }
 }
@@ -147,15 +147,64 @@ const std::map<string, MyEngine::ServletContext, MyEngine::strcmp<>> &MyEngine::
 }
 
 MyEngine::App::~App() {
-    this->servletMap.clear();
+    this->isShutdown = true;
+    HttpServer::shutdown();
+    pool->shutdown();
+    pthread_rwlock_destroy(&this->lock);
 }
 
 void App::shutdown() {
     this->isShutdown = true;
     HttpServer::shutdown();
-    pool.shutdown();
+    pool->shutdown();
 }
 
 void App::start() {
     std::thread(&App::exec, this).detach();
+}
+
+void App::CreateApp(const ServerConfig::Ptr &config) {
+    if (!app) {
+        app = new App(config);
+        app->reload();
+    }
+}
+
+void App::reload() {
+    LOG_INFO("开始重载插件");
+    pthread_rwlock_rdlock(&this->lock);
+    this->servletMap.clear();
+    this->plugins.clear();
+    string raw_url = std::filesystem::current_path().string() + app->getPluginDir();
+    for (const auto &file : std::filesystem::directory_iterator(raw_url)) {
+        auto file_name = file.path();
+        auto plugin    = make_shared<Plugin>(file_name);
+        if (!plugin->open()) {
+            LOG_WARN("插件文件 %s 无效", file_name.c_str());
+            continue;
+        }
+
+        auto manifest = plugin->getManifest();
+        if (!manifest) {
+            LOG_WARN("插件文件 %s 未携带清单信息", file_name.c_str());
+            continue;
+        }
+
+        if (!manifest->entry) {
+            LOG_WARN("插件文件 %s 入口信息无效", file_name.c_str());
+            continue;
+        }
+
+        auto p = (HttpServlet *) manifest->entry();
+        if (!p) {
+            LOG_WARN("插件文件 %s 入口函数错误", file_name.c_str());
+            continue;
+        }
+        auto servlet = shared_ptr<HttpServlet>(p);
+        this->regServlet(manifest->name, manifest->url, servlet);
+        this->plugins.push_back(plugin);
+        LOG_INFO("载入插件 %s\33[1;32m[%s:v%d -> %s]\33[0m 成功", file_name.c_str(), manifest->name, manifest->version, manifest->url);
+    }
+    pthread_rwlock_unlock(&this->lock);
+    LOG_INFO("插件重载完成")
 }

@@ -33,6 +33,7 @@ int main(int argc, char **argv) {
     printf("name:    %s\n", manifest->name);
     printf("version: %d\n", manifest->version);
     printf("author:  %s\n", manifest->author);
+    printf("url:     %s\n", manifest->url);
     printf("date:    %ld -> %s\n", manifest->time, buffer);
     printf("entry:   %p\n", manifest->entry);
 
