@@ -1,56 +1,11 @@
-set(engine_src
-        src/native/Socket.h
-        src/socket/TcpClient.h
-        src/socket/TcpClient.cpp
-        src/socket/TcpServer.h
-        src/socket/TcpServer.cpp
-        src/http/HttpRequest.h
-        src/http/HttpHeader.cpp
-        src/http/HttpRequest.cpp
-        src/http/HttpResponse.cpp
-        src/http/HttpServer.h
-        src/http/HttpServer.cpp
-        src/http/HttpParser.h
-        src/http/HttpParser.cpp
-        src/http/HttpClient.h
-        src/http/HttpClient.cpp
-        src/servlet/Servlet.h
-        src/servlet/Servlet.cpp
-        src/servlet/ServletContext.h
-        src/servlet/ServletContext.cpp
-        src/servlet/HttpServlet.h
-        src/servlet/HttpServlet.cpp
-        src/app/App.h
-        src/app/App.cpp
-        src/app/NotFindServlet.h
-        src/app/NonsupportMethodServlet.h
-        src/app/SuccessServlet.h
-        src/app/ErrorServlet.h
-        src/Utility.h
-        src/http/HttpHeader.h
-        src/http/HttpResponse.h
-        src/thread/ThreadPool.h
-        src/thread/Thread.cpp
-#        src/thread/SafeQueue.h
-        src/log/LogEvent.h
-        src/log/LogEvent.cpp
-        src/log/LogFormatter.h
-        src/log/Logger.cpp
-        src/log/Logger.h
-        src/log/LogAppender.h
-        src/log/LogAppender.cpp
-        src/log/ConsoleFormatter.cpp
-        src/log/ConsoleFormatter.h
-        src/log/ConsoleAppender.cpp
-        src/log/ConsoleAppender.h)
+file(GLOB_RECURSE MyEngineSrc "src/*.cpp" "src/*.h")
+file(GLOB_RECURSE YamlCppSrc "thirdparty/yaml-cpp/src/*.cpp" "thirdparty/yaml-cpp/src/*.h")
 
 if (UNIX)
-    add_library(MyEngineLib ${engine_src} src/native/SocketLinux.cpp)
+    add_library(MyEngineLib ${MyEngineSrc} ${YamlCppSrc})
     set(THREADS_PREFER_PTHREAD_FLAG ON)
     find_package(Threads REQUIRED)
     target_link_libraries(MyEngineLib PUBLIC Threads::Threads)
-elseif (WIN32)
-elseif (APPLE)
 endif ()
 
 function(add_test exec_name src)
