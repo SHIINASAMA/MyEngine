@@ -12,6 +12,7 @@
 #include <app/NonsupportMethodServlet.h>
 #include <app/NotFindServlet.h>
 #include <app/SuccessServlet.h>
+#include <fcntl.h>
 #include <filesystem>
 #include <fstream>
 #include <http/HttpParser.h>
@@ -22,7 +23,7 @@ MyEngine::NonsupportMethodServlet nonsupportMethodServlet;
 MyEngine::SuccessServlet successServlet;
 MyEngine::ErrorServlet errorServlet;
 
-MyEngine::App *MyEngine::App::app;
+MyEngine::App::Ptr MyEngine::App::app;
 
 using namespace MyEngine;
 
@@ -50,14 +51,13 @@ static void Main(const TcpClient::Ptr &client) {
         return;
     }
 
-    auto app        = App::GetApp();
-    auto servletMap = app->getMap();
+    auto app            = App::GetApp();
+    auto servletContext = app->findServletContextByUrl(request->getUrl());
     response->setServer(app->getServerName());
-    auto servlet_context = servletMap.find(request->getUrl());
-    if (servlet_context != servletMap.end()) {
-        auto servlet = servlet_context->second.getServlet();
+    if (servletContext) {
+        auto servlet = servletContext->getServlet();
         if (servlet->service(request, response)) {
-            LOG_INFO("请求Servlet -> (friendly_name)%s - %s\n", servlet_context->second.getName().c_str(), servlet_context->second.getServletClassName().c_str());
+            LOG_INFO("请求Servlet -> (friendly_name)%s - %s\n", servletContext->getName().c_str(), servletContext->getServletClassName().c_str());
             auto baseString = response->dump();
             client->send(baseString.c_str(), baseString.length(), 0);
         } else {
@@ -79,7 +79,6 @@ static void Main(const TcpClient::Ptr &client) {
             if (file.good()) {
                 file.seekg(0, std::ifstream::end);
                 ssize_t file_len = file.tellg();
-
                 successServlet.service(request, response);
                 response->setContentLength(file_len);
                 auto baseString = response->dump();
@@ -117,18 +116,20 @@ static void Main(const TcpClient::Ptr &client) {
 
 MyEngine::App::App(const ServerConfig::Ptr &config)
     : HttpServer(config->ipaddress, config->port), serverConfig(config) {
-    this->pool = new ThreadPool(config->threadPoolConfig.name, config->threadPoolConfig.threads);
+    auto fd   = this->getSocket();
+    int flags = fcntl(fd, F_GETFL, 0);
+    fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+    this->pool = make_shared<ThreadPool>(config->threadPoolConfig.name, config->threadPoolConfig.threads);
     pthread_rwlock_init(&this->lock, nullptr);
     LOG_INFO("服务器 - \"%s\" 启动, Listen {%s:%d}", config->name.c_str(), config->ipaddress.c_str(), config->port);
 }
 
-MyEngine::App *MyEngine::App::GetApp() {
+MyEngine::App::Ptr MyEngine::App::GetApp() {
     return app;
 }
 
-
 void MyEngine::App::regServlet(const string &servlet_name, const string &url, const Servlet::Ptr &servlet) {
-    auto config = ServletContext(servlet_name, url, servlet);
+    auto config = make_shared<ServletContext>(servlet_name, url, servlet);
     servletMap.emplace(url, config);
 }
 
@@ -139,11 +140,8 @@ void MyEngine::App::exec() {
         if (client->good()) {
             pool->execute(Main, client);
         }
+        sleep(0);
     }
-}
-
-const std::map<string, MyEngine::ServletContext, MyEngine::strcmp<>> &MyEngine::App::getMap() const {
-    return this->servletMap;
 }
 
 MyEngine::App::~App() {
@@ -155,24 +153,26 @@ MyEngine::App::~App() {
 
 void App::shutdown() {
     this->isShutdown = true;
+    Socket::shutdown(SHUT_RDWR);
+    background->join();
     HttpServer::shutdown();
     pool->shutdown();
 }
 
 void App::start() {
-    std::thread(&App::exec, this).detach();
+    this->background = std::make_shared<std::thread>(&App::exec, this);
 }
 
 void App::CreateApp(const ServerConfig::Ptr &config) {
     if (!app) {
-        app = new App(config);
+        app = shared_ptr<App>(new App(config));
         app->reload();
     }
 }
 
 void App::reload() {
     LOG_INFO("开始重载插件");
-    pthread_rwlock_rdlock(&this->lock);
+    pthread_rwlock_wrlock(&this->lock);
     this->servletMap.clear();
     this->plugins.clear();
     string raw_url = std::filesystem::current_path().string() + app->getPluginDir();
@@ -207,4 +207,17 @@ void App::reload() {
     }
     pthread_rwlock_unlock(&this->lock);
     LOG_INFO("插件重载完成")
+}
+
+ServletContext::Ptr App::findServletContextByUrl(const string &url) {
+    ServletContext::Ptr res;
+    pthread_rwlock_rdlock(&this->lock);
+    auto context = servletMap.find(url);
+    if (context != servletMap.end()) {
+        res = context->second;
+    } else {
+        res = nullptr;
+    }
+    pthread_rwlock_unlock(&this->lock);
+    return res;
 }

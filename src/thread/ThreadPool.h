@@ -55,6 +55,8 @@ namespace MyEngine {
 
     class ThreadPool {
     public:
+        typedef std::shared_ptr<ThreadPool> Ptr;
+
         ThreadPool()              = default;
         ThreadPool(ThreadPool &&) = default;
         ~ThreadPool() {
@@ -65,23 +67,22 @@ namespace MyEngine {
             data_->thread_pool_name_ = thread_pool_name;
             for (size_t i = 0; i < thread_count; ++i) {
                 data_->threads_.emplace_back(std::thread([data = data_, number = i] {
-                                   SetThreadName(data->thread_pool_name_ + "_" + std::to_string(number));
-                                   std::unique_lock<std::mutex> lk(data->mtx_);
-                                   for (;;) {// 获取任务互斥,执行任务并发。
-                                       if (!data->tasks_.empty()) {
-                                           auto current = std::move(data->tasks_.front());
-                                           data->tasks_.pop();
-                                           lk.unlock();
-                                           current();
-                                           lk.lock();
-                                       } else if (data->is_shutdown_) {
-                                           break;
-                                       } else {
-                                           data->cond_.wait(lk);
-                                       }
-                                   }
-                               }))
-                        .detach();// 线程分离，资源由系统回收。
+                    SetThreadName(data->thread_pool_name_ + "_" + std::to_string(number));
+                    std::unique_lock<std::mutex> lk(data->mtx_);
+                    for (;;) {// 获取任务互斥,执行任务并发。
+                        if (!data->tasks_.empty()) {
+                            auto current = std::move(data->tasks_.front());
+                            data->tasks_.pop();
+                            lk.unlock();
+                            current();
+                            lk.lock();
+                        } else if (data->is_shutdown_) {
+                            break;
+                        } else {
+                            data->cond_.wait(lk);
+                        }
+                    }
+                }));
             }
         }
 

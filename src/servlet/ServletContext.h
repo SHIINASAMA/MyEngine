@@ -15,6 +15,7 @@ namespace MyEngine{
      */
     class ServletContext {
     public:
+        typedef shared_ptr<ServletContext> Ptr;
         /**
          * 初始化一个 Servlet 上下文
          * @param servlet_name 服务名称

@@ -25,23 +25,24 @@ int main(int argc, char **argv) {
         LOG_ERROR("File opening failure\n");
         return -1;
     }
-
-    MyEngine::App::CreateApp(config);
-    auto app = MyEngine::App::GetApp();
-    app->start();
-    isLoop = true;
-    string cmd;
-    while (true) {
-        std::cin >> cmd;
-        if (cmd == "exit") {
-            app->shutdown();
-            return 0;
-        } else if (cmd == "reload") {
-            app->reload();
-        } else {
-            LOG_WARN("Unknown commend");
+    {
+        MyEngine::App::CreateApp(config);
+        auto app = MyEngine::App::GetApp();
+        app->start();
+        isLoop = true;
+        string cmd;
+        while (true) {
+            std::cin >> cmd;
+            if (cmd == "exit") {
+                app->shutdown();
+                break;
+            } else if (cmd == "reload") {
+                app->reload();
+            } else {
+                LOG_WARN("Unknown commend");
+            }
         }
-    }
 
-    return 0;
+        return 0;
+    }
 }

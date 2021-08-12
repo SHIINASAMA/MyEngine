@@ -3,7 +3,7 @@
 
 void TestServlet::doGet(const MyEngine::HttpRequest::Ptr &request, const MyEngine::HttpResponse::Ptr &response) {
     response->setStateCode(302);
-    response->setLocation("https://www.baidu.com");
+    response->setLocation("http://shiinasama.icu:8000/index.html");
 }
 
 void *Create() {

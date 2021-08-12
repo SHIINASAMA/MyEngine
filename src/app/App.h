@@ -20,6 +20,7 @@ namespace MyEngine {
      */
     class App : public HttpServer {
     public:
+        typedef shared_ptr<App> Ptr;
         /**
          * 创建全局对象
          * @param config 配置文件
@@ -29,7 +30,11 @@ namespace MyEngine {
          * 获取全局对象
          * @return App 全局对象
          */
-        static App *GetApp();
+        static App::Ptr GetApp();
+        /**
+         * 默认析构函数
+         */
+        ~App() override;
 
         /**
          * 注册一个 Servlet
@@ -43,15 +48,16 @@ namespace MyEngine {
          */
         void start();
         /**
-         * 获取 Servlet 映射表
-         * @return Servlet 映射表
+         * 根据 url 获取对应的 ServletContext
+         * @param url 目标 url
+         * @return 不存在则会返回 nullptr
          */
-        const std::map<string, ServletContext, strcmp<>> &getMap() const;
+        ServletContext::Ptr findServletContextByUrl(const string &url);
+
         /**
          * 关闭服务
          */
         void shutdown() override;
-
         /**
          * 获取插件中间目录名
          * @return 插件中间目录名
@@ -68,7 +74,6 @@ namespace MyEngine {
          */
         string getServerName() const { return this->serverConfig->name; }
 
-
         /**
          * 重新加载插件
          * @warning 这可能会导致其他用户 Servlet 在插件重载完成前无法使用
@@ -78,14 +83,14 @@ namespace MyEngine {
     private:
         void exec();
         explicit App(const ServerConfig::Ptr &config);
-        ~App() override;
 
-        pthread_rwlock_t lock;
+        pthread_rwlock_t lock{};
         std::atomic_bool isShutdown = false;
-        static App *app;
-        std::map<string, ServletContext, strcmp<>> servletMap;
+        static App::Ptr app;
+        std::map<string, ServletContext::Ptr, strcmp<>> servletMap;
         std::vector<Plugin::Ptr> plugins;
-        ThreadPool *pool;
+        ThreadPool::Ptr pool;
         ServerConfig::Ptr serverConfig;
+        std::shared_ptr<std::thread> background;
     };
 }// namespace MyEngine
