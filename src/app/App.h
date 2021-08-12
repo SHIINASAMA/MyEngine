@@ -53,7 +53,6 @@ namespace MyEngine {
          * @return 不存在则会返回 nullptr
          */
         ServletContext::Ptr findServletContextByUrl(const string &url);
-
         /**
          * 关闭服务
          */
@@ -73,7 +72,6 @@ namespace MyEngine {
          * @return 服务器名称
          */
         string getServerName() const { return this->serverConfig->name; }
-
         /**
          * 重新加载插件
          * @warning 这可能会导致其他用户 Servlet 在插件重载完成前无法使用

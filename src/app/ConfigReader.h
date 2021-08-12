@@ -62,11 +62,6 @@ namespace MyEngine {
     };
 
     /**
-     * @brief 插件路径集合
-     */
-    typedef std::shared_ptr<std::vector<std::string>> Plugins;
-
-    /**
      * @brief 配置文件读取器
      */
     class ConfigReader {

@@ -1,11 +1,63 @@
-file(GLOB_RECURSE MyEngineSrc "src/*.cpp" "src/*.h")
+set(MyEngineSrc
+        src/native/Socket.h
+        src/socket/TcpServer.cpp
+        src/socket/TcpServer.h
+        src/socket/TcpClient.cpp
+        src/socket/TcpClient.h
+        src/http/HttpClient.cpp
+        src/http/HttpClient.h
+        src/http/HttpHeader.h
+        src/http/HttpHeader.cpp
+        src/http/HttpParser.h
+        src/http/HttpParser.cpp
+        src/http/HttpRequest.h
+        src/http/HttpRequest.cpp
+        src/http/HttpResponse.cpp
+        src/http/HttpResponse.h
+        src/http/HttpServer.h
+        src/http/HttpServer.cpp
+        src/log/ConsoleFormatter.h
+        src/log/ConsoleFormatter.cpp
+        src/log/ConsoleAppender.h
+        src/log/ConsoleAppender.cpp
+        src/log/Logger.h
+        src/log/Logger.cpp
+        src/log/LogAppender.cpp
+        src/log/LogAppender.h
+        src/log/LogEvent.cpp
+        src/log/LogEvent.h
+        src/log/LogFormatter.h
+        src/servlet/HttpServlet.cpp
+        src/servlet/HttpServlet.h
+        src/servlet/ServletContext.h
+        src/servlet/ServletContext.cpp
+        src/servlet/Servlet.h
+        src/servlet/Servlet.cpp
+        src/thread/SafeQueue.h
+        src/thread/ThreadPool.h
+        src/thread/Thread.cpp
+        src/plugin/Plugin.h
+        src/plugin/Plugin.cpp
+        src/Utility.h
+        src/app/App.h
+        src/app/App.cpp
+        src/app/ConfigReader.h
+        src/app/ConfigReader.cpp
+        src/app/ErrorServlet.h
+        src/app/NonsupportMethodServlet.h
+        src/app/NotFindServlet.h
+        src/app/SuccessServlet.h
+        )
+
 file(GLOB_RECURSE YamlCppSrc "thirdparty/yaml-cpp/src/*.cpp" "thirdparty/yaml-cpp/src/*.h")
+add_library(yaml-cpp SHARED ${YamlCppSrc})
 
 if (UNIX)
-    add_library(MyEngine SHARED ${MyEngineSrc} ${YamlCppSrc})
+    list(APPEND MyEngineSrc src/native/SocketLinux.cpp)
+    add_library(MyEngine SHARED ${MyEngineSrc})
     set(THREADS_PREFER_PTHREAD_FLAG ON)
     find_package(Threads REQUIRED)
-    target_link_libraries(MyEngine PUBLIC Threads::Threads dl)
+    target_link_libraries(MyEngine PUBLIC Threads::Threads dl yaml-cpp)
 endif ()
 
 function(add_test exec_name)
