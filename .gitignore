@@ -1,6 +1,7 @@
 # 项目排除目录
 .vscode
 .idea
+build
 
 # 项目排除文件类型
 *.iml

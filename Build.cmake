@@ -47,17 +47,26 @@ set(MyEngineSrc
         src/app/NonsupportMethodServlet.h
         src/app/NotFindServlet.h
         src/app/SuccessServlet.h
-        )
+        src/db/sqlite/SqliteHelper.cpp
+        src/db/sqlite/SqliteHelper.h)
 
 file(GLOB_RECURSE YamlCppSrc "thirdparty/yaml-cpp/src/*.cpp" "thirdparty/yaml-cpp/src/*.h")
 add_library(yaml-cpp SHARED ${YamlCppSrc})
+
+set(SqliteSrc
+        thirdparty/sqlite/shell.c
+        thirdparty/sqlite/sqlite3.c
+        thirdparty/sqlite/sqlite3.h
+        thirdparty/sqlite/sqlite3ext.h
+        )
+add_library(Sqlite SHARED ${SqliteSrc})
 
 if (UNIX)
     list(APPEND MyEngineSrc src/native/SocketLinux.cpp)
     add_library(MyEngine SHARED ${MyEngineSrc})
     set(THREADS_PREFER_PTHREAD_FLAG ON)
     find_package(Threads REQUIRED)
-    target_link_libraries(MyEngine PUBLIC Threads::Threads dl yaml-cpp)
+    target_link_libraries(MyEngine PUBLIC Threads::Threads dl yaml-cpp Sqlite)
 endif ()
 
 function(add_test exec_name)
@@ -86,6 +95,7 @@ add_test(TestThreadPool test/TestThreadPool/main.cpp)
 add_test(TestLogger test/TestLogger/main.cpp)
 add_test(TestPlugin test/TestPlugin/main.cpp)
 add_plugin(Plugin test/TestPlugin/TestServlet.h test/TestPlugin/TestServlet.cpp)
+add_test(TestSqlite test/TestSqlite/main.cpp)
 
 # 工具文件
 add_executable(PluginManifestViewer
