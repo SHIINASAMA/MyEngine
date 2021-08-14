@@ -9,6 +9,10 @@
 #include <Utility.h>
 #include <map>
 
+/**
+ * @anchor MAKE_ELEMENT
+ * @brief 生成 Http 报头元素
+ */
 #define MAKE_ELEMENT(key, value) make_shared<MyEngine::HttpHeaderElement>(key, value)
 
 namespace MyEngine {
@@ -41,7 +45,13 @@ namespace MyEngine {
          */
         typedef shared_ptr<HttpHeaderElement> Ptr;
 
+        /**
+         * 键
+         */
         string key{};
+        /**
+         * 值
+         */
         string value{};
         /**
           * 默认初始化报头元素
@@ -66,6 +76,12 @@ namespace MyEngine {
      */
     template<class T = std::string>
     struct strcmp {
+        /**
+         * 重载()运算符
+         * @param lv 左值
+         * @param rv 右值
+         * @return 比较结果
+         */
         bool operator()(const T &lv, const T &rv) const {
             return strcasecmp(lv.c_str(), rv.c_str()) < 0;
         }
@@ -118,7 +134,7 @@ namespace MyEngine {
          */
         MyEngine::HttpHeaderElement::Ptr getHeader(const string &key);
         /**
-         * 设置 Http Header
+         * 设置 Http Header，可使用 @ref MAKE_ELEMENT 快速生成报头元素对象
          * @param headerElement 目标报头元素
          * @return 为 true 表示这是一次插入操作， 为 false 则表示这是一次更改操作
          */
@@ -243,8 +259,17 @@ namespace MyEngine {
         std::map<string, HttpHeaderElement::Ptr, strcmp<>> getElements() const { return this->elements; }
 
     protected:
+        /**
+         * Http 版本
+         */
         int version{11};
+        /**
+         * Http 报文
+         */
         string body{};
+        /**
+         * 报头元素 map
+         */
         std::map<string, HttpHeaderElement::Ptr, strcmp<>> elements;
     };
 }// namespace MyEngine

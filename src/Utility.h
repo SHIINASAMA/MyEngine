@@ -17,8 +17,15 @@ using std::shared_ptr;
 using std::string;
 using std::stringstream;
 
+/**
+ * @brief 快速调用 std::make_shared
+ */
 #define PTR(TYPE, ...) make_shared<TYPE>(__VA_ARGS__)
 
+/**
+ * @brief 调用全局 Logger 输出
+ * @warning 请不要不要直接使用该宏
+ */
 #define LOG(LEVEL, ...)                                                                                                                               \
     {                                                                                                                                                 \
         char buffer[1024];                                                                                                                            \
@@ -29,14 +36,26 @@ using std::stringstream;
         MyEngine::GetGlobalLogger()->log(event);                                                                                                      \
     }
 
+/**
+ * 输出调试级别日志
+ */
 #define LOG_DEBUG(...) \
     LOG(MyEngine::LogLevel::DEBUG, __VA_ARGS__)
 
+/**
+ * 输出信息级别日志
+ */
 #define LOG_INFO(...) \
     LOG(MyEngine::LogLevel::INFO, __VA_ARGS__)
 
+/**
+ * 输出警告级别日志
+ */
 #define LOG_WARN(...) \
     LOG(MyEngine::LogLevel::WARN, __VA_ARGS__)
 
+/**
+ * 输出错误级别日志
+ */
 #define LOG_ERROR(...) \
     LOG(MyEngine::LogLevel::ERROR, __VA_ARGS__)

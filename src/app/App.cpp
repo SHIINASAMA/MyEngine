@@ -72,7 +72,7 @@ static void Main(const TcpClient::Ptr &client) {
         string raw_url = std::filesystem::current_path();
         raw_url += app->getWebDir() + request->getUrl();
         if (IsFileExistent(raw_url)) {
-            LOG_INFO("请求资源 -> %s", raw_url.c_str());
+            LOG_INFO("请求资源 -> %s", request->getUrl().c_str());
             // 发送文件
             std::ifstream file;
             file.open(raw_url, std::fstream::out | std::fstream::binary);
@@ -98,14 +98,14 @@ static void Main(const TcpClient::Ptr &client) {
                 }
             } else {
                 // 服务器内部错误 - 500
-                LOG_WARN("服务器内部错误-505 -> %s", raw_url.c_str());
+                LOG_WARN("服务器内部错误-505 -> %s", request->getUrl().c_str());
                 errorServlet.service(request, response);
                 auto baseString = response->dump();
                 client->send(baseString.c_str(), baseString.length(), 0);
             }
         } else {
             // 未查找到资源 - 404
-            LOG_WARN("请求资源不存在-404 -> %s", raw_url.c_str());
+            LOG_WARN("请求资源不存在-404 -> %s", request->getUrl().c_str());
             notFindServlet.service(request, response);
             auto baseString = response->dump();
             client->send(baseString.c_str(), baseString.length(), 0);

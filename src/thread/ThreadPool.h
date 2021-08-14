@@ -4,6 +4,7 @@
  * @author kaoru
  * @version 0.1
  * @brief 固定线程池
+ * @warning 需要至少 CPP17 才能编译通过
  */
 #pragma once
 #include <Utility.h>
@@ -34,9 +35,17 @@ namespace MyEngine {
      */
     pid_t GetThreadId();
 
+    /**
+     * @brief 绑定参数和右值引用
+     * @tparam F 函数模板
+     */
     template<class F>
     class BindArgsMover {
     public:
+        /**
+         * 默认构造函数
+         * @param f 函数模板
+         */
         explicit BindArgsMover(F &&f) : f_(std::forward<F>(f)) {}
 
         template<class... Args>
@@ -48,21 +57,49 @@ namespace MyEngine {
         F f_;
     };
 
+    /**
+     * 简化绑定用的临时函数
+     * @tparam F 函数模板
+     * @tparam Args 参数模板
+     * @param f 函数
+     * @param args 参数
+     * @return 包装后对象
+     */
     template<class F, class... Args>
     auto bind_simple(F &&f, Args &&...args) {
         return std::bind(BindArgsMover<F>(std::forward<F>(f)), std::forward<Args>(args)...);
     }
 
+    /**
+     * @brief 固定线程池
+     */
     class ThreadPool {
     public:
+        /**
+         * 智能指针对象
+         */
         typedef std::shared_ptr<ThreadPool> Ptr;
 
+        /**
+         * 默认构造函数
+         */
         ThreadPool()              = default;
+        /**
+         * 拷贝构造函数
+         */
         ThreadPool(ThreadPool &&) = default;
+        /**
+         * 析构函数
+         */
         ~ThreadPool() {
             shutdown();
         }
 
+        /**
+         * 初始化一个线程池
+         * @param thread_pool_name 线程池名称
+         * @param thread_count 线程内线程数量
+         */
         explicit ThreadPool(const std::string &thread_pool_name, size_t thread_count) : data_(std::make_shared<data>()) {
             data_->thread_pool_name_ = thread_pool_name;
             for (size_t i = 0; i < thread_count; ++i) {
@@ -86,6 +123,13 @@ namespace MyEngine {
             }
         }
 
+        /**
+         * 处理事务
+         * @tparam F 函数模板
+         * @tparam Args 参数模板
+         * @param f 函数
+         * @param args 参数
+         */
         template<class F, class... Args>
         void execute(F &&f, Args &&...args) {
             //  解决知乎答主提出的第五点小问题。
@@ -97,8 +141,15 @@ namespace MyEngine {
             data_->cond_.notify_one();
         }
 
+        /**
+         * 判断任务队列是否为空
+         * @return 任务队列是否为空
+         */
         bool empty() { return data_->tasks_.empty(); }
 
+        /**
+         * 结束线程池，这是一个阻塞方法
+         */
         void shutdown() {
             if ((bool) data_) {
                 {

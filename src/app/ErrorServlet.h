@@ -2,7 +2,7 @@
  * @file ErrorServlet.h
  * @author kaoru
  * @date 2021.8.8
- * @brief 服务器内部错误类（500）
+ * @brief 内部错误类（500）
  * @version 0.1
  */
 #pragma once
