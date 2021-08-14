@@ -13,10 +13,8 @@ MyEngine::ConsoleAppender::ConsoleAppender(MyEngine::LogFormatter::Ptr formatter
     : LogAppender(std::move(formatter), level) {
 }
 
-void MyEngine::ConsoleAppender::dump(MyEngine::LogEvent::Ptr event) {
-    if(event->getLevel() >= level){
-        setbuf(stdout, nullptr);
-        puts(this->formatter->dump(event).c_str());
-        fflush(stdout);
-    }
+void MyEngine::ConsoleAppender::dump(const MyEngine::LogEvent::Ptr &event) {
+    setbuf(stdout, nullptr);
+    puts(this->formatter->dump(event).c_str());
+    fflush(stdout);
 }

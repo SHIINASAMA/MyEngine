@@ -11,16 +11,19 @@
 
 bool MyEngine::ConfigReader::ReadServerConfig(const std::string &path, const MyEngine::ServerConfig::Ptr &serverConfig) {
     try {
-        YAML::Node config = YAML::LoadFile(path)["server"];
+        YAML::Node config = YAML::LoadFile(path);
 
-        serverConfig->name            = config["name"].as<std::string>();
-        serverConfig->ipaddress       = config["ip-address"].as<std::string>();
-        serverConfig->port            = config["port"].as<unsigned short>();
-        serverConfig->webDirectory    = config["web-directory"].as<std::string>();
-        serverConfig->pluginDirectory = config["plugin-directory"].as<std::string>();
+        serverConfig->baseInfo.name            = config["base-info"]["name"].as<std::string>();
+        serverConfig->baseInfo.ipaddress       = config["base-info"]["ip-address"].as<std::string>();
+        serverConfig->baseInfo.port            = config["base-info"]["port"].as<unsigned short>();
+        serverConfig->baseInfo.webDirectory    = config["base-info"]["web-directory"].as<std::string>();
+        serverConfig->baseInfo.pluginDirectory = config["base-info"]["plugin-directory"].as<std::string>();
 
         serverConfig->threadPoolConfig.name    = config["thread-pool"]["name"].as<std::string>();
         serverConfig->threadPoolConfig.threads = config["thread-pool"]["threads"].as<size_t>();
+
+        serverConfig->sqliteLogDb.enable   = config["sqlite-log-db"]["enable"].as<bool>();
+        serverConfig->sqliteLogDb.location = config["sqlite-log-db"]["location"].as<std::string>();
 
         return true;
     } catch (YAML::Exception &exception) {

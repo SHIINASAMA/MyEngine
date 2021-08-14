@@ -1,11 +1,15 @@
 # 服务器配置文件模板
-server:
+base-info:
   name: My Engine Server
   ip-address: 0.0.0.0
   port: 8000
   web-directory: /web
   plugin-directory: /plugins
 
-  thread-pool:
-    name: ThreadPool
-    threads: 16
+sqlite-log-db:
+  enable: true
+  location: log.db
+
+thread-pool:
+  name: ThreadPool
+  threads: 16

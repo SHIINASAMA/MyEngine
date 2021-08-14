@@ -20,26 +20,28 @@ namespace MyEngine {
          */
         typedef std::shared_ptr<ServerConfig> Ptr;
 
-        /**
-         * 服务器名称
-         */
-        std::string name;
-        /**
-         * 运行 IP
-         */
-        std::string ipaddress;
-        /**
-         * 运行端口
-         */
-        unsigned int port;
-        /**
-         * Web 资源目录
-         */
-        std::string webDirectory;
-        /**
-         * 插件目录
-         */
-        std::string pluginDirectory;
+        struct BaseInfo {
+            /**
+             * 服务器名称
+             */
+            std::string name;
+            /**
+             * 运行 IP
+             */
+            std::string ipaddress;
+            /**
+             * 运行端口
+             */
+            unsigned int port;
+            /**
+             * Web 资源目录
+             */
+            std::string webDirectory;
+            /**
+             * 插件目录
+             */
+            std::string pluginDirectory;
+        } baseInfo;
 
         /**
          * @brief 线程池配置信息
@@ -53,12 +55,21 @@ namespace MyEngine {
              * 线程数
              */
             size_t threads;
-        };
+        } threadPoolConfig;
 
         /**
-         * 线程池配置信息
+         * @brief Sqlite log 配置
          */
-        ThreadPoolConfig threadPoolConfig;
+        struct SqliteLogDb {
+            /**
+             * 是否启用
+             */
+            bool enable;
+            /**
+             * 数据库地址
+             */
+            std::string location;
+        } sqliteLogDb;
     };
 
     /**

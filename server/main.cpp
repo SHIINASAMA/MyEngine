@@ -1,20 +1,8 @@
 #include <app/App.h>
-#include <csignal>
 #include <iostream>
-
-bool isLoop = false;
-void call(int code) {
-    if (code == SIGINT) {
-        if (isLoop) {
-            MyEngine::App::GetApp()->shutdown();
-        }
-        exit(0);
-    }
-}
+#include <log/SqliteAppender.h>
 
 int main(int argc, char **argv) {
-    signal(SIGINT, call);
-
     if (argc != 2) {
         LOG_ERROR("A file path parameter is required\n");
         return -1;
@@ -26,25 +14,35 @@ int main(int argc, char **argv) {
         return -1;
     }
 
+    if (config->sqliteLogDb.enable) {
+        LOG_INFO("加载日志数据库");
+        auto sqliteAppender = std::make_shared<MyEngine::SqliteAppender>(config->sqliteLogDb.location, MyEngine::LogLevel::DEBUG);
+        MyEngine::GetGlobalLogger()->addAppender(sqliteAppender);
+    }
+
     MyEngine::App::CreateApp(config);
     auto app = MyEngine::App::GetApp();
     app->start();
-    isLoop = true;
     string cmd;
     while (true) {
         std::cin >> cmd;
         if (cmd == "exit" || cmd == "q") {
             //todo: Can't stop correctly in wsl
+            LOG_INFO("Try to exit");
             app->shutdown();
+            LOG_INFO("Success");
             break;
         } else if (cmd == "reload") {
+            LOG_INFO("开始重载插件");
             app->reload();
+            LOG_INFO("插件重载完成")
         } else if (cmd == "info") {
-            LOG_INFO("Server name: %s", config->name.c_str());
-            LOG_INFO("Listening:   %s:%d", config->ipaddress.c_str(), config->port);
-            LOG_INFO("Web Dir:     %s", config->webDirectory.c_str());
-            LOG_INFO("Plugins Dir: %s", config->pluginDirectory.c_str());
-            LOG_INFO("Thread Pool: %s:%zu", config->threadPoolConfig.name.c_str(), config->threadPoolConfig.threads);
+            LOG_INFO("Server name:  %s", config->baseInfo.name.c_str());
+            LOG_INFO("Listening:    %s:%d", config->baseInfo.ipaddress.c_str(), config->baseInfo.port);
+            LOG_INFO("Web Dir:      %s", config->baseInfo.webDirectory.c_str());
+            LOG_INFO("Plugins Dir:  %s", config->baseInfo.pluginDirectory.c_str());
+            LOG_INFO("Sqlite Log DB:%d:%s", config->sqliteLogDb.enable, config->sqliteLogDb.location.c_str());
+            LOG_INFO("Thread Pool:  %s:%zu", config->threadPoolConfig.name.c_str(), config->threadPoolConfig.threads);
         } else {
             LOG_WARN("Unknown commend");
         }

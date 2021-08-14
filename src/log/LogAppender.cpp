@@ -11,3 +11,9 @@ MyEngine::LogAppender::LogAppender(LogFormatter::Ptr formatter, LogLevel level)
     : formatter(std::move(formatter)),
       level(level) {
 }
+
+void MyEngine::LogAppender::preDump(const LogEvent::Ptr &event) {
+    if (event->getLevel() >= level) {
+        dump(event);
+    }
+}

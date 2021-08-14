@@ -17,7 +17,7 @@ namespace MyEngine{
     public:
         ConsoleAppender(LogFormatter::Ptr formatter, LogLevel level);
 
-        void dump(LogEvent::Ptr event) override;
+        void dump(const LogEvent::Ptr &event) override;
     };
 }
 

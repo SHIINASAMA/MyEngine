@@ -48,7 +48,7 @@ set(MyEngineSrc
         src/app/NotFindServlet.h
         src/app/SuccessServlet.h
         src/db/sqlite/SqliteHelper.cpp
-        src/db/sqlite/SqliteHelper.h)
+        src/db/sqlite/SqliteHelper.h src/log/SqliteAppender.cpp src/log/SqliteAppender.h)
 
 file(GLOB_RECURSE YamlCppSrc "thirdparty/yaml-cpp/src/*.cpp" "thirdparty/yaml-cpp/src/*.h")
 add_library(yaml-cpp SHARED ${YamlCppSrc})

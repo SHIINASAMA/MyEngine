@@ -8,6 +8,7 @@
 #pragma once
 #include <Utility.h>
 #include <sqlite3.h>
+#include <mutex>
 
 #define MAKE_ROW_AND_COLUMN(r, c) std::make_pair<int, int>(r, c)
 
@@ -48,6 +49,7 @@ namespace MyEngine::Sqlite {
         bool close();
 
     protected:
+        std::mutex mutex;
         sqlite3 *raw = nullptr;
     };
 }// namespace MyEngine::Sqlite

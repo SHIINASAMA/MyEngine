@@ -34,13 +34,6 @@ namespace MyEngine {
     };
 
     /**
-     * 获取带色彩的日志等级字符串
-     * @param level 日志等级
-     * @return 字符串
-     */
-    std::string GetLevelString(const LogLevel &level);
-
-    /**
      * @brief 日志事件类
      */
     class LogEvent {

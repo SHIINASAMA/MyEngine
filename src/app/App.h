@@ -61,17 +61,17 @@ namespace MyEngine {
          * 获取插件中间目录名
          * @return 插件中间目录名
          */
-        string getPluginDir() const { return this->serverConfig->pluginDirectory; };
+        string getPluginDir() const { return this->serverConfig->baseInfo.pluginDirectory; };
         /**
          * 获取 Web 资源中间目录名
          * @return Web 资源中间目录名
          */
-        string getWebDir() const { return this->serverConfig->webDirectory; }
+        string getWebDir() const { return this->serverConfig->baseInfo.webDirectory; }
         /**
          * 获取服务器名称
          * @return 服务器名称
          */
-        string getServerName() const { return this->serverConfig->name; }
+        string getServerName() const { return this->serverConfig->baseInfo.name; }
         /**
          * 重新加载插件
          * @warning 这可能会导致其他用户 Servlet 在插件重载完成前无法使用

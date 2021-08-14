@@ -115,13 +115,13 @@ static void Main(const TcpClient::Ptr &client) {
 }
 
 MyEngine::App::App(const ServerConfig::Ptr &config)
-    : HttpServer(config->ipaddress, config->port), serverConfig(config) {
+: HttpServer(config->baseInfo.ipaddress, config->baseInfo.port), serverConfig(config) {
     auto fd   = this->getSocket();
     int flags = fcntl(fd, F_GETFL, 0);
     fcntl(fd, F_SETFL, flags | O_NONBLOCK);
     this->pool = make_shared<ThreadPool>(config->threadPoolConfig.name, config->threadPoolConfig.threads);
     pthread_rwlock_init(&this->lock, nullptr);
-    LOG_INFO("服务器 - \"%s\" 启动, Listen {%s:%d}", config->name.c_str(), config->ipaddress.c_str(), config->port);
+    LOG_INFO("服务器 - \"%s\" 启动, Listen {%s:%d}", config->baseInfo.name.c_str(), config->baseInfo.ipaddress.c_str(), config->baseInfo.port);
 }
 
 MyEngine::App::Ptr MyEngine::App::GetApp() {
@@ -171,7 +171,6 @@ void App::CreateApp(const ServerConfig::Ptr &config) {
 }
 
 void App::reload() {
-    LOG_INFO("开始重载插件");
     pthread_rwlock_wrlock(&this->lock);
     this->servletMap.clear();
     this->plugins.clear();
@@ -206,7 +205,6 @@ void App::reload() {
         LOG_INFO("载入插件 %s\33[1;32m[%s:v%d -> %s]\33[0m 成功", file_name.c_str(), manifest->name, manifest->version, manifest->url);
     }
     pthread_rwlock_unlock(&this->lock);
-    LOG_INFO("插件重载完成")
 }
 
 ServletContext::Ptr App::findServletContextByUrl(const string &url) {

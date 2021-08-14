@@ -8,14 +8,20 @@
 #pragma once
 #include <log/LogFormatter.h>
 
-namespace MyEngine{
+namespace MyEngine {
 
     /**
      * @brief 控制台日志格式化器
      */
-    class ConsoleFormatter : public LogFormatter{
+    class ConsoleFormatter : public LogFormatter {
     public:
-        std::string dump(LogEvent::Ptr event) override;
-    };
-}
+        std::string dump(const LogEvent::Ptr &event) override;
 
+        /**
+          * 获取带色彩的日志等级字符串
+          * @param level 日志等级
+          * @return 字符串
+          */
+        static std::string GetLevelString(const LogLevel &level);
+    };
+}// namespace MyEngine
