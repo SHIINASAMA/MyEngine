@@ -14,6 +14,7 @@
 #include <fstream>
 #include <http/HttpParser.h>
 #include <servlet/HttpServlet.h>
+#include <sys/stat.h>
 
 MyEngine::App::Ptr MyEngine::App::app;
 
@@ -72,6 +73,9 @@ static void on500(const TcpClient::Ptr &client, const HttpRequest::Ptr &request,
 
 static void on200(const TcpClient::Ptr &client, const HttpRequest::Ptr &request, const HttpResponse::Ptr &response, const string &fileName) {
     std::ifstream file;
+    struct stat buffer{0};
+    stat(fileName.c_str(), &buffer);
+    response->setLastModified(buffer.st_mtime);
     file.open(fileName.c_str(), std::fstream::out | std::fstream::binary);
     if (file.good()) {
         LOG_INFO("请求完整资源 -> %s", fileName.c_str());
@@ -102,6 +106,9 @@ static void on200(const TcpClient::Ptr &client, const HttpRequest::Ptr &request,
 
 static void on206(const TcpClient::Ptr &client, const HttpRequest::Ptr &request, const HttpResponse::Ptr &response, const string &fileName, const HttpRange::Ptr &ranges) {
     std::ifstream file;
+    struct stat buffer{0};
+    stat(fileName.c_str(), &buffer);
+    response->setLastModified(buffer.st_mtime);
     file.open(fileName, std::fstream::out | std::fstream::binary);
     if (file.good()) {
         file.seekg(0, std::ifstream::end);
