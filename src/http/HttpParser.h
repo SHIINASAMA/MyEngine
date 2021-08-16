@@ -42,6 +42,8 @@ namespace MyEngine {
          * @return 实际接收大小
          */
         static ssize_t GetLine(const TcpClient::Ptr& sock, char *buf, int size);
+
+    public:
         /**
          * 分割字符串
          * @param string 目标字符串

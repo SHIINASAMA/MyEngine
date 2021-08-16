@@ -43,12 +43,12 @@ set(MyEngineSrc
         src/app/App.cpp
         src/app/ConfigReader.h
         src/app/ConfigReader.cpp
-        src/app/ErrorServlet.h
-        src/app/NonsupportMethodServlet.h
-        src/app/NotFindServlet.h
-        src/app/SuccessServlet.h
         src/db/sqlite/SqliteHelper.cpp
-        src/db/sqlite/SqliteHelper.h src/log/SqliteAppender.cpp src/log/SqliteAppender.h)
+        src/db/sqlite/SqliteHelper.h
+        src/log/SqliteAppender.cpp
+        src/log/SqliteAppender.h
+        src/http/HttpRange.cpp
+        src/http/HttpRange.h)
 
 file(GLOB_RECURSE YamlCppSrc "thirdparty/yaml-cpp/src/*.cpp" "thirdparty/yaml-cpp/src/*.h")
 add_library(yaml-cpp SHARED ${YamlCppSrc})

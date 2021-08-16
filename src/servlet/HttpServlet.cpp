@@ -31,9 +31,7 @@ void MyEngine::HttpServlet::destroy() {
 }
 
 void MyEngine::HttpServlet::doGet(const MyEngine::HttpRequest::Ptr &request, const MyEngine::HttpResponse::Ptr &response) {
-    response->setStateCode(200);
 }
 
 void MyEngine::HttpServlet::doPost(const MyEngine::HttpRequest::Ptr &request, const MyEngine::HttpResponse::Ptr &response) {
-    response->setStateCode(200);
 }

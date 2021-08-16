@@ -8,6 +8,7 @@
 #pragma once
 #include <Utility.h>
 #include <map>
+#include <http/HttpRange.h>
 
 /**
  * @anchor MAKE_ELEMENT
@@ -195,6 +196,22 @@ namespace MyEngine {
          * @return “Location” 值
          */
         string getLocation();
+        /**
+         * 获取 “Date” 值
+         * @return “Date” 值
+         */
+        time_t getDate();
+        /**
+         * 获取 “Last-Modified” 值
+         * @return “Last-Modified” 值
+         */
+        time_t getLastModified();
+        /**
+         * 获取 “Range” 值
+         * @return “Range” 值
+         */
+        HttpRange::Ptr getRange();
+
 
         /**
          * 设置 “Accept” 值
@@ -251,12 +268,33 @@ namespace MyEngine {
          * @param value “Location” 值
          */
         void setLocation(const string &value);
+        /**
+         * 设置 “Date” 值
+         * @param value “Date” 值
+         */
+        void setDate(time_t &value);
+        /**
+         * 设置 “Last-Modified” 值
+         * @param value “Last-Modified”
+         */
+        void setLastModified(time_t &value);
+        /**
+         * 设置 “Content-Range” 值
+         * @param startPos 文件起点
+         * @param endPos 文件终点
+         * @param size 文件大小
+         */
+        void setContentRange(ssize_t startPos, ssize_t endPos, ssize_t size);
 
         /**
          * 获取报头集合
          * @return 报头集合
          */
         std::map<string, HttpHeaderElement::Ptr, strcmp<>> getElements() const { return this->elements; }
+
+    public:
+        static string Time2String(time_t &t);
+        static time_t String2Time(const string &str);
 
     protected:
         /**
