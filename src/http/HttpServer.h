@@ -24,11 +24,11 @@ namespace MyEngine {
          * @param ipaddress 地址
          * @param port 端口
          */
-        HttpServer(const string &ipaddress, unsigned short port);
+        HttpServer(const string &ipaddress, unsigned short port) noexcept;
         /**
          * 默认析构函数
          */
-        ~HttpServer() override = default;
+        ~HttpServer() noexcept override = default;
 
     public:
         /**
@@ -36,15 +36,15 @@ namespace MyEngine {
          * @param backlog 队列大小
          * @return 是否配置成功
          */
-        bool init(int backlog);
+        bool init(int backlog) noexcept;
         /**
          * 接收一个 TCP 客户端
          * @return TCP 客户端
          */
-        TcpClient::Ptr accept();
+        TcpClient::Ptr accept() noexcept;
         virtual /**
          * 关闭服务器
          */
-        void shutdown();
+        void shutdown() noexcept;
     };
 }// namespace MyEngine

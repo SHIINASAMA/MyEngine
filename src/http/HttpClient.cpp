@@ -12,7 +12,7 @@
 
 using namespace MyEngine;
 
-bool MyEngine::HttpClient::Get(const string &ipaddress, unsigned short port, const HttpRequest::Ptr& request, HttpResponse::Ptr response) {
+bool MyEngine::HttpClient::Get(const string &ipaddress, unsigned short port, const HttpRequest::Ptr& request, HttpResponse::Ptr response) noexcept {
     request->setMethod(HttpMethod::GET);
     request->setHttpVersion(11);
     auto baseString = request->dump();
@@ -35,7 +35,7 @@ bool MyEngine::HttpClient::Get(const string &ipaddress, unsigned short port, con
     }
 }
 
-bool HttpClient::Post(const string &ipaddress, unsigned short port, const HttpRequest::Ptr& request, HttpResponse::Ptr response) {
+bool HttpClient::Post(const string &ipaddress, unsigned short port, const HttpRequest::Ptr& request, HttpResponse::Ptr response) noexcept {
     request->setMethod(HttpMethod::POST);
     request->setHttpVersion(11);
     auto baseString = request->dump();

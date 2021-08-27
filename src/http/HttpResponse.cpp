@@ -12,12 +12,12 @@ using MyEngine::HttpHeader;
 using MyEngine::HttpMethod;
 using std::string;
 
-MyEngine::HttpResponse::HttpResponse(int version, int stateCode) {
+MyEngine::HttpResponse::HttpResponse(int version, int stateCode) noexcept {
     this->version    = version;
     this->stateCode  = stateCode;
 }
 
-std::string MyEngine::HttpResponse::dump() const {
+std::string MyEngine::HttpResponse::dump() const noexcept {
     std::stringstream stream;
     if (version == 11) {
         stream << "HTTP/1.1 ";

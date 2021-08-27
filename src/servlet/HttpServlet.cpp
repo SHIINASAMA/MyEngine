@@ -7,7 +7,7 @@
  */
 #include <servlet/HttpServlet.h>
 
-bool MyEngine::HttpServlet::service(const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) {
+bool MyEngine::HttpServlet::service(const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) noexcept {
     if (request->getMethod() == HttpMethod::GET) {
         init();
         doGet(request, response);
@@ -24,14 +24,14 @@ bool MyEngine::HttpServlet::service(const HttpRequest::Ptr &request, const HttpR
     }
 }
 
-void MyEngine::HttpServlet::init() {
+void MyEngine::HttpServlet::init() noexcept {
 }
 
-void MyEngine::HttpServlet::destroy() {
+void MyEngine::HttpServlet::destroy() noexcept {
 }
 
-void MyEngine::HttpServlet::doGet(const MyEngine::HttpRequest::Ptr &request, const MyEngine::HttpResponse::Ptr &response) {
+void MyEngine::HttpServlet::doGet(const MyEngine::HttpRequest::Ptr &request, const MyEngine::HttpResponse::Ptr &response) noexcept {
 }
 
-void MyEngine::HttpServlet::doPost(const MyEngine::HttpRequest::Ptr &request, const MyEngine::HttpResponse::Ptr &response) {
+void MyEngine::HttpServlet::doPost(const MyEngine::HttpRequest::Ptr &request, const MyEngine::HttpResponse::Ptr &response) noexcept {
 }

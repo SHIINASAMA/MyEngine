@@ -25,6 +25,6 @@ namespace MyEngine {
          * @param event 日志事件
          * @return 字符串
          */
-        virtual std::string dump(const LogEvent::Ptr &event) = 0;
+        virtual std::string dump(const LogEvent::Ptr &event) noexcept = 0;
     };
 }// namespace MyEngine

@@ -7,8 +7,8 @@
  */
 #pragma once
 #include <Utility.h>
-#include <sqlite3.h>
 #include <mutex>
+#include <sqlite3.h>
 
 /**
  * @anchor MAKE_ROW_AND_COLUMN
@@ -36,42 +36,42 @@ namespace MyEngine::Sqlite {
          * @param rows 行数
          * @param columns 列数
          */
-        explicit SqliteResult(char **rawPtr, int rows, int columns);
+        explicit SqliteResult(char **rawPtr, int rows, int columns) noexcept;
         /**
          * 析构函数
          */
-        virtual ~SqliteResult();
+        virtual ~SqliteResult() noexcept;
 
         /**
          * 获取表格
          * @return 二维字符串数组
          */
-        char **getTable();
+        char **getTable() noexcept;
         /**
          * 获取具体的一项数据
          * @param row 行号
          * @param column 列号
          * @return 数据字符串
          */
-        char *getItem(int row, int column);
+        char *getItem(int row, int column) noexcept;
 
         /**
          * 获取表格的行数
          * @return 表格的行数
          */
-        int getRows() const { return this->rows; }
+        int getRows() const noexcept { return this->rows; }
         /**
          * 获取表格的列数
          * @return 表格的列数
          */
-        int getColumns() const { return this->columns; }
+        int getColumns() const noexcept { return this->columns; }
 
         /**
          * @brief 获取具体的一项数据，可以使用 @ref MAKE_ROW_AND_COLUMN 快速生成
          * @param rowAndColumns 行号与列号
          * @return 数据字符串
          */
-        const char* operator[](std::pair<int, int> rowAndColumns) const;
+        const char *operator[](std::pair<int, int> rowAndColumns) const noexcept;
 
     private:
         int rows;
@@ -92,36 +92,36 @@ namespace MyEngine::Sqlite {
         /**
          * 默认构造函数
          */
-        SqliteHelper() = default;
+        SqliteHelper() noexcept = default;
         /**
          * 析构函数
          */
-        virtual ~SqliteHelper();
+        virtual ~SqliteHelper() noexcept;
 
         /**
          * 打开数据库
          * @param path 数据库文件路径，不存在则会创建
          * @return 是否打开成功
          */
-        bool open(const string &path);
+        bool open(const string &path) noexcept;
         /**
          * 执行 select 语句，有返回值的查询语句
          * @param sql sql 语句
          * @param result 查询结果
          * @return 是否执行成功
          */
-        bool select(const string &sql, SqliteResult::Ptr &result);
+        bool select(const string &sql, SqliteResult::Ptr &result) noexcept;
         /**
          * 执行没有返回值的 sql 语句
          * @param sql 查询结果
          * @return 是否执行成功
          */
-        bool exec(const string &sql);
+        bool exec(const string &sql) noexcept;
         /**
          * 关闭当前数据库连接
          * @return 是否成功
          */
-        bool close();
+        bool close() noexcept;
 
     protected:
         std::mutex mutex;

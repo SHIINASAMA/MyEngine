@@ -13,14 +13,14 @@ using MyEngine::HttpMethod;
 using MyEngine::HttpRequest;
 using std::string;
 
-MyEngine::HttpRequest::HttpRequest(HttpMethod method, const string &url, const string &query_string, int version) {
+MyEngine::HttpRequest::HttpRequest(HttpMethod method, const string &url, const string &query_string, int version) noexcept {
     this->method       = method;
     this->url          = url;
     this->query_string = query_string;
     this->version      = version;
 }
 
-string HttpRequest::dump() const {
+string HttpRequest::dump() const noexcept {
     std::stringstream stream;
     if (method == HttpMethod::GET) {
         stream << "GET ";
@@ -48,7 +48,7 @@ string HttpRequest::dump() const {
     return stream.str();
 }
 
-MyEngine::HttpRequest::~HttpRequest() {
+MyEngine::HttpRequest::~HttpRequest() noexcept {
     this->elements.clear();
 }
 

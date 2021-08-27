@@ -9,14 +9,14 @@
 
 thread_local std::string thread_name{"Main"};
 
-std::string MyEngine::GetThreadName() {
+std::string MyEngine::GetThreadName() noexcept {
     return thread_name;
 }
 
-void MyEngine::SetThreadName(const std::string &name){
+void MyEngine::SetThreadName(const std::string &name) noexcept {
     thread_name = name;
 }
 
-pid_t MyEngine::GetThreadId() {
+pid_t MyEngine::GetThreadId() noexcept {
     return syscall(SYS_gettid);
 }

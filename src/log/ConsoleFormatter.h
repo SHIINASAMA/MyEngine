@@ -15,13 +15,13 @@ namespace MyEngine {
      */
     class ConsoleFormatter : public LogFormatter {
     public:
-        std::string dump(const LogEvent::Ptr &event) override;
+        std::string dump(const LogEvent::Ptr &event) noexcept override;
 
         /**
           * 获取带色彩的日志等级字符串
           * @param level 日志等级
           * @return 字符串
           */
-        static std::string GetLevelString(const LogLevel &level);
+        static std::string GetLevelString(const LogLevel &level) noexcept;
     };
 }// namespace MyEngine

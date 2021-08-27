@@ -16,7 +16,7 @@
  * 500-  500至最后     500，-1
  */
 
-MyEngine::HttpRange::HttpRange(const string &str) {
+MyEngine::HttpRange::HttpRange(const string &str) noexcept {
     auto dataStr = HttpParser::Split(str, "=")[1];
     auto rs      = HttpParser::Split(dataStr, ",");
     for (const auto &i : rs) {
@@ -37,7 +37,7 @@ MyEngine::HttpRange::HttpRange(const string &str) {
     }
 }
 
-string MyEngine::HttpRange::MakeContentRange(ssize_t startPos, ssize_t endPos, ssize_t size) {
+string MyEngine::HttpRange::MakeContentRange(ssize_t startPos, ssize_t endPos, ssize_t size) noexcept {
     std::stringstream stream;
     stream << "bytes " << startPos << "-" << endPos << "/" << size;
     return stream.str();

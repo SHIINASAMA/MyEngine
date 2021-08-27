@@ -22,11 +22,11 @@ using namespace MyEngine;
 
 static thread_local std::atomic_bool isBreak;
 
-static void onSIGPIPE(int code) {
+static void onSIGPIPE(int code) noexcept {
     isBreak = true;
 }
 
-static bool IsFileExistent(const std::filesystem::path &path) {
+static bool IsFileExistent(const std::filesystem::path &path) noexcept {
     std::error_code error;
     auto file_status = std::filesystem::status(path, error);
     if (error) {
@@ -41,14 +41,14 @@ static bool IsFileExistent(const std::filesystem::path &path) {
     return true;
 }
 
-static void on404(const TcpClient::Ptr &client, const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) {
+static void on404(const TcpClient::Ptr &client, const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) noexcept {
     LOG_WARN("请求资源不存在-404 -> %s", request->getUrl().c_str());
     response->setStateCode(404);
     auto baseString = response->dump();
     client->send(baseString.c_str(), baseString.length(), 0);
 }
 
-static void on405(const TcpClient::Ptr &client, const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) {
+static void on405(const TcpClient::Ptr &client, const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) noexcept {
     LOG_INFO("不支持的Http方法");
     response->setStateCode(405);
     response->setHeader(MAKE_ELEMENT("Access-Control-Allow-Methods", "GET, POST"));
@@ -56,14 +56,14 @@ static void on405(const TcpClient::Ptr &client, const HttpRequest::Ptr &request,
     client->send(baseString.c_str(), baseString.length(), 0);
 }
 
-static void on416(const TcpClient::Ptr &client, const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) {
+static void on416(const TcpClient::Ptr &client, const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) noexcept {
     LOG_INFO("错误的文件区间");
     response->setStateCode(416);
     auto baseString = response->dump();
     client->send(baseString.c_str(), baseString.length(), 0);
 }
 
-static void on500(const TcpClient::Ptr &client, const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) {
+static void on500(const TcpClient::Ptr &client, const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) noexcept {
     LOG_WARN("服务器内部错误-500 -> %s", request->getUrl().c_str());
     response->setStateCode(500);
     response->setHeader(MAKE_ELEMENT("error", strerror(errno)));
@@ -71,7 +71,7 @@ static void on500(const TcpClient::Ptr &client, const HttpRequest::Ptr &request,
     client->send(baseString.c_str(), baseString.length(), 0);
 }
 
-static void on200(const TcpClient::Ptr &client, const HttpRequest::Ptr &request, const HttpResponse::Ptr &response, const string &fileName) {
+static void on200(const TcpClient::Ptr &client, const HttpRequest::Ptr &request, const HttpResponse::Ptr &response, const string &fileName) noexcept {
     std::ifstream file;
     struct stat buffer{0};
     stat(fileName.c_str(), &buffer);
@@ -104,7 +104,7 @@ static void on200(const TcpClient::Ptr &client, const HttpRequest::Ptr &request,
     }
 }
 
-static void on206(const TcpClient::Ptr &client, const HttpRequest::Ptr &request, const HttpResponse::Ptr &response, const string &fileName, const HttpRange::Ptr &ranges) {
+static void on206(const TcpClient::Ptr &client, const HttpRequest::Ptr &request, const HttpResponse::Ptr &response, const string &fileName, const HttpRange::Ptr &ranges) noexcept {
     std::ifstream file;
     struct stat buffer{0};
     stat(fileName.c_str(), &buffer);
@@ -178,7 +178,7 @@ static void on206(const TcpClient::Ptr &client, const HttpRequest::Ptr &request,
 end:;
 }
 
-static void Main(const TcpClient::Ptr &client) {
+static void Main(const TcpClient::Ptr &client) noexcept {
     auto request  = make_shared<HttpRequest>();
     auto response = make_shared<HttpResponse>();
     time_t t;
@@ -224,7 +224,7 @@ static void Main(const TcpClient::Ptr &client) {
     client->close();
 }
 
-MyEngine::App::App(const ServerConfig::Ptr &config)
+MyEngine::App::App(const ServerConfig::Ptr &config) noexcept
     : HttpServer(config->baseInfo.ipaddress, config->baseInfo.port), serverConfig(config) {
     auto fd   = this->getSocket();
     int flags = fcntl(fd, F_GETFL, 0);
@@ -234,16 +234,16 @@ MyEngine::App::App(const ServerConfig::Ptr &config)
     LOG_INFO("服务器 - \"%s\" 启动, Listen {%s:%d}", config->baseInfo.name.c_str(), config->baseInfo.ipaddress.c_str(), config->baseInfo.port);
 }
 
-MyEngine::App::Ptr MyEngine::App::GetApp() {
+MyEngine::App::Ptr MyEngine::App::GetApp() noexcept {
     return app;
 }
 
-void MyEngine::App::regServlet(const string &servlet_name, const string &url, const Servlet::Ptr &servlet) {
+void MyEngine::App::regServlet(const string &servlet_name, const string &url, const Servlet::Ptr &servlet) noexcept {
     auto config = make_shared<ServletContext>(servlet_name, url, servlet);
     servletMap.emplace(url, config);
 }
 
-void MyEngine::App::exec() {
+void MyEngine::App::exec() noexcept {
     this->init(10);
     while (!this->isShutdown) {
         auto client = this->accept();
@@ -254,14 +254,14 @@ void MyEngine::App::exec() {
     }
 }
 
-MyEngine::App::~App() {
+MyEngine::App::~App() noexcept {
     this->isShutdown = true;
     HttpServer::shutdown();
     pool->shutdown();
     pthread_rwlock_destroy(&this->lock);
 }
 
-void App::shutdown() {
+void App::shutdown() noexcept {
     this->isShutdown = true;
     Socket::shutdown(SHUT_RDWR);
     background->join();
@@ -269,18 +269,18 @@ void App::shutdown() {
     pool->shutdown();
 }
 
-void App::start() {
+void App::start() noexcept {
     this->background = std::make_shared<std::thread>(&App::exec, this);
 }
 
-void App::CreateApp(const ServerConfig::Ptr &config) {
+void App::CreateApp(const ServerConfig::Ptr &config) noexcept {
     if (!app) {
         app = shared_ptr<App>(new App(config));
         app->reload();
     }
 }
 
-void App::reload() {
+void App::reload() noexcept {
     pthread_rwlock_wrlock(&this->lock);
     this->servletMap.clear();
     this->plugins.clear();
@@ -317,7 +317,7 @@ void App::reload() {
     pthread_rwlock_unlock(&this->lock);
 }
 
-ServletContext::Ptr App::findServletContextByUrl(const string &url) {
+ServletContext::Ptr App::findServletContextByUrl(const string &url) noexcept {
     ServletContext::Ptr res;
     pthread_rwlock_rdlock(&this->lock);
     auto context = servletMap.find(url);

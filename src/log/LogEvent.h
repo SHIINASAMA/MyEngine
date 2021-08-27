@@ -54,43 +54,43 @@ namespace MyEngine {
          * @param line 行号
          * @param m 信息
          */
-        LogEvent(time_t tm, LogLevel lv, std::string thread, pid_t id, const char *file, int32_t line, std::string m);
+        LogEvent(time_t tm, LogLevel lv, std::string thread, pid_t id, const char *file, int32_t line, std::string m) noexcept;
 
         /**
          * 获取时间
          * @return 时间
          */
-        time_t getTime() const { return this->time; }
+        time_t getTime() const noexcept { return this->time; }
         /**
          * 获取事件等级
          * @return 事件等级
          */
-        LogLevel getLevel() const { return this->level; }
+        LogLevel getLevel() const noexcept { return this->level; }
         /**
          * 获取线程 ID
          * @return 线程 ID
          */
-        pid_t getThreadId() const { return this->threadId; }
+        pid_t getThreadId() const noexcept { return this->threadId; }
         /**
          * 获取文件名称
          * @return 文件名称
          */
-        const char *getFileName() const { return this->file; }
+        const char *getFileName() const noexcept { return this->file; }
         /**
          * 获取行号
          * @return 行号
          */
-        int32_t getLine() const { return this->line; }
+        int32_t getLine() const noexcept { return this->line; }
         /**
          * 获取信息
          * @return 信息
          */
-        std::string getMessage() const { return this->message; }
+        std::string getMessage() const noexcept { return this->message; }
         /**
          * 获取线程名称
          * @return 线程名称
          */
-        std::string getThreadName() const {return this->threadName;}
+        std::string getThreadName() const noexcept {return this->threadName;}
 
     private:
         time_t time;

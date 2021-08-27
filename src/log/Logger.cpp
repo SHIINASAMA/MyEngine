@@ -9,11 +9,11 @@
 #include <log/ConsoleFormatter.h>
 #include <log/Logger.h>
 
-void MyEngine::Logger::addAppender(const MyEngine::LogAppender::Ptr &appender) {
+void MyEngine::Logger::addAppender(const MyEngine::LogAppender::Ptr &appender) noexcept {
     this->appenders.emplace_back(appender);
 }
 
-void MyEngine::Logger::log(const MyEngine::LogEvent::Ptr &event) {
+void MyEngine::Logger::log(const MyEngine::LogEvent::Ptr &event) noexcept {
     for (auto &appender : appenders) {
         appender->preDump(event);
     }
@@ -21,7 +21,7 @@ void MyEngine::Logger::log(const MyEngine::LogEvent::Ptr &event) {
 
 static MyEngine::Logger::Ptr logger = nullptr;
 
-MyEngine::Logger::Ptr MyEngine::GetGlobalLogger() {
+MyEngine::Logger::Ptr MyEngine::GetGlobalLogger() noexcept {
     if (logger == nullptr) {
         logger.reset(new Logger());
         auto formatter       = std::make_shared<ConsoleFormatter>();

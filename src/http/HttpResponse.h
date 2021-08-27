@@ -22,34 +22,34 @@ namespace MyEngine {
         /**
           * 默认构造函数
           */
-        HttpResponse() = default;
+        HttpResponse() noexcept = default;
         /**
           * 初始化一个 HTTP 回报
           * @param version HTTP 版本
           * @param stateCode 状态码
           */
-        HttpResponse(int version, int stateCode);
+        HttpResponse(int version, int stateCode) noexcept;
         /**
           * 默认析构函数
           */
-        ~HttpResponse() override = default;
+        ~HttpResponse() noexcept override = default;
 
         /**
          * 获取状态码
          * @return 状态码
          */
-        int getStateCode() const { return this->stateCode; }
+        int getStateCode() const noexcept { return this->stateCode; }
         /**
          * 设置状态码
          * @param code 状态码
          */
-        void setStateCode(int code) { this->stateCode = code; }
+        void setStateCode(int code) noexcept { this->stateCode = code; }
 
         /**
          * 报头导出
          * @return 字符串
          */
-        string dump() const;
+        string dump() const noexcept;
 
     protected:
         int stateCode{200};

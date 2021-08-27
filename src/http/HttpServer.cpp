@@ -16,10 +16,10 @@ using MyEngine::HttpResponse;
 using MyEngine::HttpServer;
 using std::string;
 
-HttpServer::HttpServer(const string &ipaddress, unsigned short port) : TcpServer(ipaddress.c_str(), port) {
+HttpServer::HttpServer(const string &ipaddress, unsigned short port) noexcept : TcpServer(ipaddress.c_str(), port) {
 }
 
-bool HttpServer::init(int backlog) {
+bool HttpServer::init(int backlog) noexcept {
     if (!Socket::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) {
         return false;
     }
@@ -36,10 +36,10 @@ bool HttpServer::init(int backlog) {
     return true;
 }
 
-MyEngine::TcpClient::Ptr HttpServer::accept() {
+MyEngine::TcpClient::Ptr HttpServer::accept() noexcept {
     return TcpServer::accept();
 }
 
-void HttpServer::shutdown() {
+void HttpServer::shutdown() noexcept {
     this->close();
 }

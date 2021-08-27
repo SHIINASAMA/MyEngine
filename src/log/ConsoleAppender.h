@@ -15,9 +15,9 @@ namespace MyEngine{
      */
     class ConsoleAppender : public LogAppender{
     public:
-        ConsoleAppender(LogFormatter::Ptr formatter, LogLevel level);
+        ConsoleAppender(LogFormatter::Ptr formatter, LogLevel level) noexcept;
 
-        void dump(const LogEvent::Ptr &event) override;
+        void dump(const LogEvent::Ptr &event) noexcept override;
     };
 }
 

@@ -15,7 +15,7 @@
 
 using std::string;
 
-bool MyEngine::HttpParser::RequestParser(const TcpClient::Ptr &sock, const HttpRequest::Ptr &request) {
+bool MyEngine::HttpParser::RequestParser(const TcpClient::Ptr &sock, const HttpRequest::Ptr &request) noexcept {
     char buffer[BUFFER_MAX_LENGTH]{0};
     ssize_t length;
 
@@ -82,7 +82,7 @@ bool MyEngine::HttpParser::RequestParser(const TcpClient::Ptr &sock, const HttpR
     return true;
 }
 
-bool MyEngine::HttpParser::ResponseParser(const TcpClient::Ptr &sock, const HttpResponse::Ptr &response) {
+bool MyEngine::HttpParser::ResponseParser(const TcpClient::Ptr &sock, const HttpResponse::Ptr &response) noexcept {
     char buffer[BUFFER_MAX_LENGTH]{0};
     ssize_t length;
 
@@ -135,7 +135,7 @@ bool MyEngine::HttpParser::ResponseParser(const TcpClient::Ptr &sock, const Http
     return true;
 }
 
-ssize_t MyEngine::HttpParser::GetLine(const MyEngine::TcpClient::Ptr& sock, char *buf, int size) {
+ssize_t MyEngine::HttpParser::GetLine(const MyEngine::TcpClient::Ptr& sock, char *buf, int size) noexcept {
     ssize_t i = 0;
     ssize_t n;
 
@@ -160,7 +160,7 @@ ssize_t MyEngine::HttpParser::GetLine(const MyEngine::TcpClient::Ptr& sock, char
     return i;
 }
 
-std::vector<std::string> MyEngine::HttpParser::Split(const std::string &str, const std::string &pattern) {
+std::vector<std::string> MyEngine::HttpParser::Split(const std::string &str, const std::string &pattern) noexcept {
     std::vector<std::string> res;
     std::string::size_type pos1, pos2;
     pos2 = str.find(pattern);

@@ -8,7 +8,7 @@
 #pragma once
 #include <servlet/Servlet.h>
 
-namespace MyEngine{
+namespace MyEngine {
 
     /**
      * @brief Servlet 上下文
@@ -22,54 +22,54 @@ namespace MyEngine{
          * @param url URL
          * @param servlet Servlet 实例
          */
-        ServletContext(const string &servlet_name, const string &url, const Servlet::Ptr &servlet);
+        ServletContext(const string &servlet_name, const string &url, const Servlet::Ptr &servlet) noexcept;
         /**
          * 默认析构函数
          */
-        virtual ~ServletContext() = default;
+        virtual ~ServletContext() noexcept = default;
 
         /**
          * 获取服务名称
          * @return 服务名称
          */
-        string getName() const;
+        string getName() const noexcept;
         /**
          * 获取 URL
          * @return URL
          */
-        string getUrl() const;
+        string getUrl() const noexcept;
         /**
          * 获取 Servlet 实例名称
          * @return Servlet 实例名称
          */
-        string getServletClassName() const;
+        string getServletClassName() const noexcept;
         /**
          * 获取 Servlet 实例
          * @return Servlet 实例
          */
-        Servlet::Ptr getServlet() const;
+        Servlet::Ptr getServlet() const noexcept;
 
         /**
          * Servlet 执行前
          * @deprecated 没有必要使用该函数
          */
-        void servletInit();
+        void servletInit() noexcept;
         /**
          * 执行服务
          * @param request 请求
          * @param response 回报
          * @deprecated 没有必要使用该函数
          */
-        void servletService(const HttpRequest::Ptr& request, const MyEngine::HttpResponse::Ptr& response);
+        void servletService(const HttpRequest::Ptr &request, const MyEngine::HttpResponse::Ptr &response) noexcept;
         /**
          * 执行后
          * @deprecated 没有必要使用该函数
          */
-        void ServletDestroy();
+        void ServletDestroy() noexcept;
 
     private:
         string name;
         string url;
         Servlet::Ptr servlet{};
     };
-}
+}// namespace MyEngine

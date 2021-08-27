@@ -58,28 +58,28 @@ namespace MyEngine {
          * 从文件中加载插件
          * @param path 路径
          */
-        explicit Plugin(const std::string &path);
+        explicit Plugin(const std::string &path) noexcept;
         /**
          * 默认析构函数
          */
-        virtual ~Plugin();
+        virtual ~Plugin() noexcept;
 
         /**
          * 打开当前指定路径的文件
          * @return 是否成功
          */
-        bool open();
+        bool open() noexcept;
         /**
          * 获取清单文件
          * @return 清单文件
          */
-        Manifest *getManifest();
+        Manifest *getManifest() noexcept;
 
         /**
          * 获取插件路径
          * @return 插件路径
          */
-        std::string getPath() const { return this->path; }
+        std::string getPath() const noexcept { return this->path; }
 
     protected:
         void *handle = nullptr;

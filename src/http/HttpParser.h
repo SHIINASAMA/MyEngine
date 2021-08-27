@@ -24,14 +24,14 @@ namespace MyEngine {
          * @param request 请求
          * @return 是否获取成功
          */
-        static bool RequestParser(const TcpClient::Ptr& sock, const HttpRequest::Ptr& request);
+        static bool RequestParser(const TcpClient::Ptr& sock, const HttpRequest::Ptr& request) noexcept;
         /**
          * 读取回报
          * @param sock Tcp 连接
          * @param response 回报
          * @return 是否获取成功
          */
-        static bool ResponseParser(const TcpClient::Ptr& sock, const HttpResponse::Ptr& response);
+        static bool ResponseParser(const TcpClient::Ptr& sock, const HttpResponse::Ptr& response) noexcept;
 
     private:
         /**
@@ -41,7 +41,7 @@ namespace MyEngine {
          * @param size 缓存块大小
          * @return 实际接收大小
          */
-        static ssize_t GetLine(const TcpClient::Ptr& sock, char *buf, int size);
+        static ssize_t GetLine(const TcpClient::Ptr& sock, char *buf, int size) noexcept;
 
     public:
         /**
@@ -50,6 +50,6 @@ namespace MyEngine {
          * @param pattern 模式字符串
          * @return 字符串集合
          */
-        static std::vector<std::string> Split(const std::string &string, const std::string &pattern);
+        static std::vector<std::string> Split(const std::string &string, const std::string &pattern) noexcept;
     };
 }// namespace MyEngine

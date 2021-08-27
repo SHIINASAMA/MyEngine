@@ -8,7 +8,7 @@
 #include <log/SqliteAppender.h>
 #include <sstream>
 
-MyEngine::SqliteAppender::SqliteAppender(const string &path, LogLevel level) : LogAppender(nullptr, level), dbPath(path) {
+MyEngine::SqliteAppender::SqliteAppender(const string &path, LogLevel level) noexcept : LogAppender(nullptr, level), dbPath(path) {
     this->sqlite = make_shared<Sqlite::SqliteHelper>();
     if (!sqlite->open(path)) {
         LOG_WARN("日志数据库打开失败，停止记录日志");
@@ -36,14 +36,14 @@ MyEngine::SqliteAppender::SqliteAppender(const string &path, LogLevel level) : L
     }
 }
 
-string MyEngine::SqliteAppender::timeFormat(time_t time) {
+string MyEngine::SqliteAppender::timeFormat(time_t time) noexcept {
     auto tm = localtime(&time);
     char buffer[64];
     strftime(buffer, 64, "%Y-%m-%d %X", tm);
     return {buffer};
 }
 
-void MyEngine::SqliteAppender::dump(const MyEngine::LogEvent::Ptr& event) {
+void MyEngine::SqliteAppender::dump(const MyEngine::LogEvent::Ptr& event) noexcept {
     if (this->log) {
         std::stringstream stream;
         stream << "INSERT INTO \"" << tableName << "\" (level,time,threadName,threadId,fileName,fileLine,message)\n"
@@ -59,7 +59,7 @@ void MyEngine::SqliteAppender::dump(const MyEngine::LogEvent::Ptr& event) {
     }
 }
 
-string MyEngine::SqliteAppender::GetLevelString(LogLevel level) {
+string MyEngine::SqliteAppender::GetLevelString(LogLevel level) noexcept {
     switch (level) {
         case LogLevel::DEBUG:
             return "DEBUG";

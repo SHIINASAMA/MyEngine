@@ -7,12 +7,12 @@
  */
 #include <log/LogAppender.h>
 
-MyEngine::LogAppender::LogAppender(LogFormatter::Ptr formatter, LogLevel level)
+MyEngine::LogAppender::LogAppender(LogFormatter::Ptr formatter, LogLevel level) noexcept
     : formatter(std::move(formatter)),
       level(level) {
 }
 
-void MyEngine::LogAppender::preDump(const LogEvent::Ptr &event) {
+void MyEngine::LogAppender::preDump(const LogEvent::Ptr &event) noexcept {
     if (event->getLevel() >= level) {
         dump(event);
     }

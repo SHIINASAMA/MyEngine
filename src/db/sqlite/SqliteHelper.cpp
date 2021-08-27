@@ -7,37 +7,37 @@
  */
 #include "SqliteHelper.h"
 
-MyEngine::Sqlite::SqliteResult::SqliteResult(char **rawPtr, int rows, int columns) {
+MyEngine::Sqlite::SqliteResult::SqliteResult(char **rawPtr, int rows, int columns) noexcept {
     this->raw     = rawPtr;
     this->rows    = rows;
     this->columns = columns;
 }
 
-MyEngine::Sqlite::SqliteHelper::~SqliteHelper() {
+MyEngine::Sqlite::SqliteHelper::~SqliteHelper() noexcept {
     this->close();
 }
 
-MyEngine::Sqlite::SqliteResult::~SqliteResult() {
+MyEngine::Sqlite::SqliteResult::~SqliteResult() noexcept {
     sqlite3_free_table(this->raw);
 }
 
-char **MyEngine::Sqlite::SqliteResult::getTable() {
+char **MyEngine::Sqlite::SqliteResult::getTable() noexcept {
     return raw;
 }
 
-char *MyEngine::Sqlite::SqliteResult::getItem(int row, int column) {
+char *MyEngine::Sqlite::SqliteResult::getItem(int row, int column) noexcept {
     return raw[(rows + 1) * row + column];
 }
 
-const char *MyEngine::Sqlite::SqliteResult::operator[](std::pair<int, int> rowAndColumns) const {
+const char *MyEngine::Sqlite::SqliteResult::operator[](std::pair<int, int> rowAndColumns) const noexcept {
     return raw[(rows + 1) * rowAndColumns.first + rowAndColumns.second];
 }
 
-bool MyEngine::Sqlite::SqliteHelper::open(const string &path) {
+bool MyEngine::Sqlite::SqliteHelper::open(const string &path) noexcept {
     return sqlite3_open_v2(path.c_str(), &this->raw, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_SHAREDCACHE, NULL) == SQLITE_OK;
 }
 
-bool MyEngine::Sqlite::SqliteHelper::close() {
+bool MyEngine::Sqlite::SqliteHelper::close() noexcept {
     if (raw) {
         auto rt = sqlite3_close_v2(raw) == SQLITE_OK;
         if (rt) {
@@ -49,7 +49,7 @@ bool MyEngine::Sqlite::SqliteHelper::close() {
     return true;
 }
 
-bool MyEngine::Sqlite::SqliteHelper::exec(const string &sql) {
+bool MyEngine::Sqlite::SqliteHelper::exec(const string &sql) noexcept {
     int rows;
     int columns;
     char *error;
@@ -61,7 +61,7 @@ bool MyEngine::Sqlite::SqliteHelper::exec(const string &sql) {
     return false;
 }
 
-bool MyEngine::Sqlite::SqliteHelper::select(const string &sql, SqliteResult::Ptr &result) {
+bool MyEngine::Sqlite::SqliteHelper::select(const string &sql, SqliteResult::Ptr &result) noexcept {
     int rows;
     int columns;
     char *error;

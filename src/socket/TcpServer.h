@@ -21,13 +21,13 @@ namespace MyEngine {
          * @param ipaddress IP 地址
          * @param port 端口
          */
-        explicit TcpServer(const char *ipaddress = "127.0.0.1", unsigned short port = 80);
-        TcpServer(const TcpServer &) = delete;
+        explicit TcpServer(const char *ipaddress = "127.0.0.1", unsigned short port = 80) noexcept;
+        TcpServer(const TcpServer &) noexcept = delete;
 
         /**
          * 接收一个客户端 TCP 协议套接字
          * @return TCP 客户端套接字
          */
-        TcpClient::Ptr accept() const;
+        TcpClient::Ptr accept() const noexcept;
     };
 }// namespace MyEngine

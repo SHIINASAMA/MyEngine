@@ -9,7 +9,7 @@
 
 #include <utility>
 
-MyEngine::LogEvent::LogEvent(time_t tm, MyEngine::LogLevel lv, std::string name, pid_t id, const char *file, int32_t line, std::string m)
+MyEngine::LogEvent::LogEvent(time_t tm, MyEngine::LogLevel lv, std::string name, pid_t id, const char *file, int32_t line, std::string m) noexcept
     : time(tm),
       level(lv),
       threadName(std::move(name)),

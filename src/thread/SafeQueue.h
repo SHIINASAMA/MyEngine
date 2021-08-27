@@ -19,16 +19,16 @@ namespace MyEngine {
         /**
          * 默认构造函数
          */
-        SafeQueue() = default;
+        SafeQueue() noexcept = default;
         /**
          * 默认析构函数
          */
-        virtual ~SafeQueue() = default;
+        virtual ~SafeQueue() noexcept = default;
 
         /**
          * 判断队列是否为空
          */
-        bool empty() {
+        bool empty() noexcept {
             std::unique_lock<std::mutex> lock(this->mutex);
             return this->queue.empty();
         }
@@ -37,7 +37,7 @@ namespace MyEngine {
          * 获取队列大小
          * @return 队列大小
          */
-        int size() {
+        int size() noexcept {
             std::unique_lock<std::mutex> lock(this->mutex);
             return this->queue.size();
         }
@@ -45,7 +45,7 @@ namespace MyEngine {
          * 入队
          * @param t 目标元素
          */
-        void enqueue(T &t){
+        void enqueue(T &t) noexcept {
             std::unique_lock<std::mutex> lock(this->mutex);
             this->queue.push(t);
         }
@@ -54,7 +54,7 @@ namespace MyEngine {
          * @param t 出队元素
          * @return 是否出队成功
          */
-        bool dequeue(T &t){
+        bool dequeue(T &t) noexcept {
             std::unique_lock<std::mutex> lock(this->mutex);
             if (this->queue.empty()) {
                 return false;

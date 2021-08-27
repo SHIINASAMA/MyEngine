@@ -26,30 +26,30 @@ namespace MyEngine{
          * @param path 数据库路径，不存在则自动创建
          * @param level 日志等级阈值
          */
-        SqliteAppender(const string &path, LogLevel level);
+        SqliteAppender(const string &path, LogLevel level) noexcept;
         /**
          * 默认析构函数
          */
-        virtual ~SqliteAppender() = default;
+        virtual ~SqliteAppender() noexcept = default;
 
         /**
          * 写入日志
          * @param event 日志事件
          */
-        void dump(const LogEvent::Ptr& event) override;
+        void dump(const LogEvent::Ptr& event) noexcept override;
 
         /**
          * 获取等级字符串
          * @param level 日志等级
          * @return 等级字符串
          */
-        static string GetLevelString(LogLevel level);
+        static string GetLevelString(LogLevel level) noexcept;
         /**
          * 格式化时间未 Sqlite 模式
          * @param time 时间
          * @return 指定格式
          */
-        static string timeFormat(time_t time);
+        static string timeFormat(time_t time) noexcept;
     private:
 
         bool log = true;

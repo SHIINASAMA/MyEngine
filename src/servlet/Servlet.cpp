@@ -11,7 +11,7 @@
 #include <servlet/Servlet.h>
 #include <typeinfo>
 
-string MyEngine::Servlet::getClassName() const {
+string MyEngine::Servlet::getClassName() const noexcept {
 #ifdef __GNUC__
     return {abi::__cxa_demangle(typeid(*this).name(), nullptr, nullptr, nullptr)};
 #endif

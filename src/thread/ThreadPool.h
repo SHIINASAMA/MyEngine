@@ -23,17 +23,17 @@ namespace MyEngine {
      * 获取当前线程名称
      * @return 线程名称
      */
-    std::string GetThreadName();
+    std::string GetThreadName() noexcept;
     /**
      * 设置当前线程名称
      * @param name 线程名称
      */
-    void SetThreadName(const std::string &name);
+    void SetThreadName(const std::string &name) noexcept;
     /**
      * 获取当前线程 PID
      * @return 线程 PID
      */
-    pid_t GetThreadId();
+    pid_t GetThreadId() noexcept;
 
     /**
      * @brief 绑定参数和右值引用
@@ -46,7 +46,7 @@ namespace MyEngine {
          * 默认构造函数
          * @param f 函数模板
          */
-        explicit BindArgsMover(F &&f) : f_(std::forward<F>(f)) {}
+        explicit BindArgsMover(F &&f) noexcept : f_(std::forward<F>(f)) {}
 
         template<class... Args>
         auto operator()(Args &&...args) {
@@ -66,7 +66,7 @@ namespace MyEngine {
      * @return 包装后对象
      */
     template<class F, class... Args>
-    auto bind_simple(F &&f, Args &&...args) {
+    auto bind_simple(F &&f, Args &&...args) noexcept {
         return std::bind(BindArgsMover<F>(std::forward<F>(f)), std::forward<Args>(args)...);
     }
 
@@ -83,15 +83,15 @@ namespace MyEngine {
         /**
          * 默认构造函数
          */
-        ThreadPool()              = default;
+        ThreadPool() noexcept = default;
         /**
          * 拷贝构造函数
          */
-        ThreadPool(ThreadPool &&) = default;
+        ThreadPool(ThreadPool &&) noexcept = default;
         /**
          * 析构函数
          */
-        ~ThreadPool() {
+        ~ThreadPool() noexcept {
             shutdown();
         }
 
@@ -100,7 +100,7 @@ namespace MyEngine {
          * @param thread_pool_name 线程池名称
          * @param thread_count 线程内线程数量
          */
-        explicit ThreadPool(const std::string &thread_pool_name, size_t thread_count) : data_(std::make_shared<data>()) {
+        explicit ThreadPool(const std::string &thread_pool_name, size_t thread_count) noexcept : data_(std::make_shared<data>()) {
             data_->thread_pool_name_ = thread_pool_name;
             for (size_t i = 0; i < thread_count; ++i) {
                 data_->threads_.emplace_back(std::thread([data = data_, number = i] {
@@ -131,7 +131,7 @@ namespace MyEngine {
          * @param args 参数
          */
         template<class F, class... Args>
-        void execute(F &&f, Args &&...args) {
+        void execute(F &&f, Args &&...args) noexcept {
             //  解决知乎答主提出的第五点小问题。
             auto task = bind_simple(f, args...);
             {
@@ -145,12 +145,12 @@ namespace MyEngine {
          * 判断任务队列是否为空
          * @return 任务队列是否为空
          */
-        bool empty() { return data_->tasks_.empty(); }
+        bool empty() noexcept { return data_->tasks_.empty(); }
 
         /**
          * 结束线程池，这是一个阻塞方法
          */
-        void shutdown() {
+        void shutdown() noexcept {
             if ((bool) data_) {
                 {
                     std::lock_guard<std::mutex> lk(data_->mtx_);

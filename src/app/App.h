@@ -25,16 +25,16 @@ namespace MyEngine {
          * 创建全局对象
          * @param config 配置文件
          */
-        static void CreateApp(const ServerConfig::Ptr &config);
+        static void CreateApp(const ServerConfig::Ptr &config) noexcept;
         /**
          * 获取全局对象
          * @return App 全局对象
          */
-        static App::Ptr GetApp();
+        static App::Ptr GetApp() noexcept;
         /**
          * 默认析构函数
          */
-        ~App() override;
+        ~App() noexcept override;
 
         /**
          * 注册一个 Servlet
@@ -42,45 +42,45 @@ namespace MyEngine {
          * @param url URL
          * @param servlet Servlet 实例
          */
-        void regServlet(const string &servlet_name, const string &url, const Servlet::Ptr &servlet);
+        void regServlet(const string &servlet_name, const string &url, const Servlet::Ptr &servlet) noexcept;
         /**
          * 启动函数
          */
-        void start();
+        void start() noexcept;
         /**
          * 根据 url 获取对应的 ServletContext
          * @param url 目标 url
          * @return 不存在则会返回 nullptr
          */
-        ServletContext::Ptr findServletContextByUrl(const string &url);
+        ServletContext::Ptr findServletContextByUrl(const string &url) noexcept;
         /**
          * 关闭服务
          */
-        void shutdown() override;
+        void shutdown() noexcept override;
         /**
          * 获取插件中间目录名
          * @return 插件中间目录名
          */
-        string getPluginDir() const { return this->serverConfig->baseInfo.pluginDirectory; };
+        string getPluginDir() const noexcept { return this->serverConfig->baseInfo.pluginDirectory; };
         /**
          * 获取 Web 资源中间目录名
          * @return Web 资源中间目录名
          */
-        string getWebDir() const { return this->serverConfig->baseInfo.webDirectory; }
+        string getWebDir() const noexcept { return this->serverConfig->baseInfo.webDirectory; }
         /**
          * 获取服务器名称
          * @return 服务器名称
          */
-        string getServerName() const { return this->serverConfig->baseInfo.name; }
+        string getServerName() const noexcept { return this->serverConfig->baseInfo.name; }
         /**
          * 重新加载插件
          * @warning 这可能会导致其他用户 Servlet 在插件重载完成前无法使用
          */
-        void reload();
+        void reload() noexcept;
 
     private:
-        void exec();
-        explicit App(const ServerConfig::Ptr &config);
+        void exec() noexcept;
+        explicit App(const ServerConfig::Ptr &config) noexcept;
 
         pthread_rwlock_t lock{};
         std::atomic_bool isShutdown = false;

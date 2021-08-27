@@ -35,14 +35,14 @@ namespace MyEngine {
          * 默认构造函数
          * @param str 待解析的字符串
          */
-        explicit HttpRange(const string &str);
+        explicit HttpRange(const string &str) noexcept;
 
         /**
          * 获取区间集合
          * @details 外部遍历用
          * @return 区间集合
          */
-        auto getRanges() const { return this->ranges; }
+        auto getRanges() const noexcept { return this->ranges; }
 
         /**
          * 将字符串格式化为 “bytes startPos-endPos/size” 的格式
@@ -51,7 +51,7 @@ namespace MyEngine {
          * @param size 文件总大大小
          * @return 格式化后字符串
          */
-        static string MakeContentRange(ssize_t startPos, ssize_t endPos, ssize_t size);
+        static string MakeContentRange(ssize_t startPos, ssize_t endPos, ssize_t size) noexcept;
 
     private:
         std::vector<Range> ranges;

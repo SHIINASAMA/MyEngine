@@ -10,10 +10,10 @@
 #ifdef __linux__
 
 #include <arpa/inet.h>
+#include <memory>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <memory>
 
 typedef int socket_t;
 #endif
@@ -33,27 +33,27 @@ namespace MyEngine {
          * 创建临时对象
          * @param socket 文件描述符
          */
-        explicit Socket(socket_t socket);
+        explicit Socket(socket_t socket) noexcept;
         /**
          * 初始化 Socket
          * @param socket 文件描述符
          * @param address 地址信息
          */
-        Socket(socket_t socket, sockaddr_in address);
+        Socket(socket_t socket, sockaddr_in address) noexcept;
         /**
          * 初始化 Socket
          * @param ipaddr ip地址
          * @param port 端口
          */
-        Socket(const char *ipaddr, unsigned short port);
+        Socket(const char *ipaddr, unsigned short port) noexcept;
         /**
          * 默认初始化 Socket
          */
-        Socket() = default;
+        Socket() noexcept = default;
         /**
          * 默认析构
          */
-        virtual ~Socket();
+        virtual ~Socket() noexcept;
 
         /**
          * 创建 Socket 文件描述符
@@ -62,50 +62,50 @@ namespace MyEngine {
          * @param protocol 协议
          * @return 是否创建成功
          */
-        bool socket(int domain, int type, int protocol);
+        bool socket(int domain, int type, int protocol) noexcept;
         /**
          * 判断当前文件描述符是否可用
          * @return 当前文件描述符是否可用
          */
-        bool good() const;
+        bool good() const noexcept;
         /**
          * 尝试连接主机
          * @param _address 目标地址
          * @param address_len 地址大小
          * @return 是否连接成功
          */
-        bool connect(const sockaddr *_address, socklen_t address_len) const;
+        bool connect(const sockaddr *_address, socklen_t address_len) const noexcept;
         /**
          * 绑定地址
          * @param address 目标地址
          * @param address_len 地址大小
          * @return 是否绑定成功
          */
-        bool bind(const struct sockaddr *address, socklen_t address_len) const;
+        bool bind(const struct sockaddr *address, socklen_t address_len) const noexcept;
         /**
          * 设置监听队列
          * @param backlog 队列大小
          * @return 是否设置成功
          */
-        bool listen(int backlog) const;
+        bool listen(int backlog) const noexcept;
         /**
          * 接收一个客户端 Socket
          * @param _address 客户端地址
          * @param address_len 客户端地址大小
          * @return Socket 客户端
          */
-        Socket accept(struct sockaddr *_address, socklen_t *address_len) const;
+        Socket accept(struct sockaddr *_address, socklen_t *address_len) const noexcept;
         /**
          * 关闭当前连接
          * @return 是否关闭成功
          */
-        bool close();
+        bool close() noexcept;
         /**
          * 关闭当前连接
          * @param how 关闭方式
          * @return 是否关闭成功
          */
-        bool shutdown(int how) const;
+        bool shutdown(int how) const noexcept;
         /**
          * 设置 Socket 属性
          * @param level 等级
@@ -114,7 +114,7 @@ namespace MyEngine {
          * @param opt_len 属性大小
          * @return 是否设置成功
          */
-        bool setsockopt(int level, int opt_name, const void *opt_value, socklen_t opt_len) const;
+        bool setsockopt(int level, int opt_name, const void *opt_value, socklen_t opt_len) const noexcept;
         /**
          * 获取 Socket 属性
          * @param level 等级
@@ -123,7 +123,7 @@ namespace MyEngine {
          * @param opt_len 属性大小
          * @return 是否获取成功
          */
-        bool getsockopt(int level, int opt_name, void *opt_value, socklen_t *opt_len) const;
+        bool getsockopt(int level, int opt_name, void *opt_value, socklen_t *opt_len) const noexcept;
         /**
          * 接收字节
          * @param buf 缓存块
@@ -131,7 +131,7 @@ namespace MyEngine {
          * @param flags 接收标志
          * @return 实际接收大小
          */
-        ssize_t recv(void *buf, size_t len, int flags) const;
+        ssize_t recv(void *buf, size_t len, int flags) const noexcept;
         /**
          * 发送字节
          * @param buf 缓存块
@@ -139,18 +139,18 @@ namespace MyEngine {
          * @param flags 接收标志
          * @return 实际接收大小
          */
-        ssize_t send(const void *buf, size_t len, int flags) const;
+        ssize_t send(const void *buf, size_t len, int flags) const noexcept;
 
         /**
          * 获取当前文件描述符
          * @return Socket 文件描述符
          */
-        socket_t getSocket() const;
+        socket_t getSocket() const noexcept;
         /**
          * 获取当前地址
          * @return 当前地址
          */
-        sockaddr_in getAddress() const;
+        sockaddr_in getAddress() const noexcept;
 
     protected:
         socket_t fd{-1};

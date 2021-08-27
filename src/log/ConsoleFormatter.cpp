@@ -8,7 +8,7 @@
 #include <log/ConsoleFormatter.h>
 #include <sstream>
 
-std::string MyEngine::ConsoleFormatter::dump(const MyEngine::LogEvent::Ptr &event) {
+std::string MyEngine::ConsoleFormatter::dump(const MyEngine::LogEvent::Ptr &event) noexcept {
     std::stringstream stream;
     time_t time     = event->getTime();
     auto timeStruct = localtime(&time);
@@ -22,7 +22,7 @@ std::string MyEngine::ConsoleFormatter::dump(const MyEngine::LogEvent::Ptr &even
     return stream.str();
 }
 
-std::string MyEngine::ConsoleFormatter::GetLevelString(const LogLevel &logLevel) {
+std::string MyEngine::ConsoleFormatter::GetLevelString(const LogLevel &logLevel) noexcept {
     switch (logLevel) {
         case LogLevel::DEBUG:
             return "\33[1;32mDEBUG\33[0m";

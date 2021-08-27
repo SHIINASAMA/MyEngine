@@ -24,23 +24,23 @@ namespace MyEngine{
         /**
          * 默认构造函数
          */
-        Logger() = default;
+        Logger() noexcept = default;
 
         /**
          * 添加日志输出地
          * @param appender 日志输出地
          */
-        void addAppender(const LogAppender::Ptr& appender);
+        void addAppender(const LogAppender::Ptr& appender) noexcept;
         /**
          * 输出日志
          * @param event 日志事件
          */
-        void log(const LogEvent::Ptr& event);
+        void log(const LogEvent::Ptr& event) noexcept;
 
     private:
         std::vector<LogAppender::Ptr> appenders;
     };
 
-    Logger::Ptr GetGlobalLogger();
+    Logger::Ptr GetGlobalLogger() noexcept;
 }
 

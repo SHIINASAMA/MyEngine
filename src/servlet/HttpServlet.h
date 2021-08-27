@@ -23,30 +23,30 @@ namespace MyEngine {
         /**
          * 执行前
          */
-        void init() override;
+        void init() noexcept override;
         /**
          * 执行服务
          * @param request 请求
          * @param response 回报
          * @return 是否执行成功
          */
-        bool service(const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) override;
+        bool service(const HttpRequest::Ptr &request, const HttpResponse::Ptr &response) noexcept override;
         /**
          * 执行后
          */
-        void destroy() override;
+        void destroy() noexcept override;
 
         /**
          * 执行 Get 请求
          * @param request 请求
          * @param response 回报
          */
-        virtual void doGet(const MyEngine::HttpRequest::Ptr &request, const MyEngine::HttpResponse::Ptr &response);
+        virtual void doGet(const MyEngine::HttpRequest::Ptr &request, const MyEngine::HttpResponse::Ptr &response) noexcept;
         /**
          * 执行 Post 请求
          * @param request 请求
          * @param response 回报
          */
-        virtual void doPost(const MyEngine::HttpRequest::Ptr &request, const MyEngine::HttpResponse::Ptr &response);
+        virtual void doPost(const MyEngine::HttpRequest::Ptr &request, const MyEngine::HttpResponse::Ptr &response) noexcept;
     };
 }// namespace MyEngine
