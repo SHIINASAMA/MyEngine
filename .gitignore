@@ -2,6 +2,7 @@
 .vscode
 .idea
 build
+CMakeFiles
 
 # 项目排除文件类型
 *.iml
@@ -11,3 +12,8 @@ build
 *.lib
 *.so
 *.dll
+
+# 项目排除文件
+cmake_install.cmake
+CMakeCache.txt
+Makefile
