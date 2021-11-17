@@ -61,6 +61,12 @@ set(SqliteSrc
         )
 add_library(Sqlite SHARED ${SqliteSrc})
 
+set(CArgsSrc
+        thirdparty/CARGS/CArgs.cpp
+        thirdparty/CARGS/CArgs.h
+        )
+add_library(CArgs SHARED ${CArgsSrc})
+
 if (UNIX)
     list(APPEND MyEngineSrc src/native/SocketLinux.cpp)
     add_library(MyEngine SHARED ${MyEngineSrc})
@@ -84,16 +90,21 @@ function(add_plugin plugin_name)
     add_library(${ARGV0} SHARED ${ARGN} ${PluginSrc})
 endfunction(add_plugin)
 
+include_directories(src)
+include_directories(thirdparty/yaml-cpp/include)
+include_directories(thirdparty/sqlite)
+include_directories(thirdparty/CARGS)
+
 # 测试文件
 add_test(TestTcpClient test/TestTcpClient/main.cpp)
 add_test(TestTcpServer test/TestTcpServer/main.cpp)
-add_test(TestHttpServer test/TestHttpServer/main.cpp)
-add_test(TestHttpClient test/TestHttpClient/main.cpp)
-add_test(TestServlet test/TestServlet/main.cpp)
+# add_test(TestHttpServer test/TestHttpServer/main.cpp)
+# add_test(TestHttpClient test/TestHttpClient/main.cpp)
+# add_test(TestServlet test/TestServlet/main.cpp)
 add_test(TestApp test/TestApp/main.cpp)
 add_test(TestThreadPool test/TestThreadPool/main.cpp)
 add_test(TestLogger test/TestLogger/main.cpp)
-add_test(TestPlugin test/TestPlugin/main.cpp)
+# add_test(TestPlugin test/TestPlugin/main.cpp)
 add_plugin(Plugin test/TestPlugin/TestServlet.h test/TestPlugin/TestServlet.cpp)
 add_test(TestSqlite test/TestSqlite/main.cpp)
 
@@ -110,4 +121,4 @@ target_link_libraries(PluginManifestViewer dl)
 
 # 服务器本体
 add_executable(Server server/main.cpp)
-target_link_libraries(Server MyEngine)
+target_link_libraries(Server MyEngine CArgs)

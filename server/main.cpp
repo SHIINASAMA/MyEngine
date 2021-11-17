@@ -1,17 +1,37 @@
 #include <app/App.h>
 #include <iostream>
 #include <log/SqliteAppender.h>
+#include <CArgs.h>
+
+void help(char **argv);
+void start(const char *config_path);
 
 int main(int argc, char **argv) {
-    if (argc != 2) {
-        LOG_ERROR("A file path parameter is required\n");
-        return -1;
-    }
+//    if (argc != 2) {
+//        LOG_ERROR("A file path parameter is required\n");
+//        return -1;
+//    }
 
+    CARGS_SET_NO_MATCH_CALLBACK_FUNC(help);
+    CARGS_NOT_ESSENTIAL("-conf-path", "config.yaml");
+    CARGS_INIT(argc, argv);
+    const char *value = nullptr;
+    if(CARGS_GET_VALUE_BY_KEY("-conf-path", &value)){
+        start(value);
+    }
+    return 0;
+}
+
+void help(char **argv){
+    puts("感谢您使用 MyEngine Server");
+    puts("使用方法：Server --config-path /path/to/config");
+}
+
+void start(const char *config_path){
     auto config = std::make_shared<MyEngine::ServerConfig>();
-    if (!MyEngine::ConfigReader::ReadServerConfig(argv[1], config)) {
+    if (!MyEngine::ConfigReader::ReadServerConfig(config_path, config)) {
         LOG_ERROR("File opening failure\n");
-        return -1;
+        return;
     }
 
     if (config->sqliteLogDb.enable) {
@@ -47,5 +67,4 @@ int main(int argc, char **argv) {
             LOG_WARN("Unknown commend");
         }
     }
-    return 0;
 }

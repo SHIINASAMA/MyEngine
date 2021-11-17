@@ -3,6 +3,7 @@
 .idea
 build
 CMakeFiles
+Testing
 
 # 项目排除文件类型
 *.iml
@@ -12,6 +13,7 @@ CMakeFiles
 *.lib
 *.so
 *.dll
+*.cbp
 
 # 项目排除文件
 cmake_install.cmake
