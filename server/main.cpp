@@ -1,6 +1,7 @@
 #include <app/App.h>
 #include <iostream>
 #include <log/SqliteAppender.h>
+#include <log/FileAppender.h>
 #include <CArgs.h>
 
 void help(char **argv);
@@ -38,6 +39,13 @@ void start(const char *config_path){
         LOG_INFO("加载日志数据库");
         auto sqliteAppender = std::make_shared<MyEngine::SqliteAppender>(config->sqliteLogDb.location, MyEngine::LogLevel::DEBUG);
         MyEngine::GetGlobalLogger()->addAppender(sqliteAppender);
+    }
+
+    if (config->fileLogDir.enable) {
+        //todo: log to file
+        auto fileAppender = std::make_shared<MyEngine::FileAppender>(config->fileLogDir.location, MyEngine::LogLevel::DEBUG);
+        MyEngine::GetGlobalLogger()->addAppender(fileAppender);
+        LOG_INFO("加载日志文件记录 - %s", fileAppender->getCurrentFileName().c_str());
     }
 
     MyEngine::App::CreateApp(config);

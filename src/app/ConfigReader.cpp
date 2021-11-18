@@ -25,6 +25,9 @@ bool MyEngine::ConfigReader::ReadServerConfig(const std::string &path, const MyE
         serverConfig->sqliteLogDb.enable   = config["sqlite-log-db"]["enable"].as<bool>();
         serverConfig->sqliteLogDb.location = config["sqlite-log-db"]["location"].as<std::string>();
 
+        serverConfig->fileLogDir.enable = config["file-log-dir"]["enable"].as<bool>();
+        serverConfig->fileLogDir.location = config["file-log-dir"]["location"].as<std::string>();
+
         return true;
     } catch (YAML::Exception &exception) {
         LOG_DEBUG("%s", exception.what());

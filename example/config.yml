@@ -7,8 +7,12 @@ base-info:
   plugin-directory: /plugins
 
 sqlite-log-db:
-  enable: true
+  enable: false
   location: log.db
+
+file-log-dir:
+  enable: true
+  location: /log
 
 thread-pool:
   name: ThreadPool

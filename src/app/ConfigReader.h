@@ -6,6 +6,7 @@
  * @brief 配置文件读取器
  */
 
+#pragma once
 #include <vector>
 #include <yaml-cpp/yaml.h>
 
@@ -70,6 +71,20 @@ namespace MyEngine {
              */
             std::string location;
         } sqliteLogDb;
+
+        /**
+         * @brief log 文件夹配置
+         */
+        struct FileLogDir{
+            /**
+             * 是否启用
+             */
+            bool enable;
+            /**
+             * 文件夹位置
+             */
+            std::string location;
+        } fileLogDir;
     };
 
     /**

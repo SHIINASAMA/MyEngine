@@ -48,7 +48,10 @@ set(MyEngineSrc
         src/log/SqliteAppender.cpp
         src/log/SqliteAppender.h
         src/http/HttpRange.cpp
-        src/http/HttpRange.h)
+        src/http/HttpRange.h
+        src/log/FileAppender.h
+        src/log/FileAppender.cpp
+        )
 
 file(GLOB_RECURSE YamlCppSrc "thirdparty/yaml-cpp/src/*.cpp" "thirdparty/yaml-cpp/src/*.h")
 add_library(yaml-cpp SHARED ${YamlCppSrc})
@@ -96,17 +99,17 @@ include_directories(thirdparty/sqlite)
 include_directories(thirdparty/CARGS)
 
 # 测试文件
-add_test(TestTcpClient test/TestTcpClient/main.cpp)
-add_test(TestTcpServer test/TestTcpServer/main.cpp)
+# add_test(TestTcpClient test/TestTcpClient/main.cpp)
+# add_test(TestTcpServer test/TestTcpServer/main.cpp)
 # add_test(TestHttpServer test/TestHttpServer/main.cpp)
 # add_test(TestHttpClient test/TestHttpClient/main.cpp)
 # add_test(TestServlet test/TestServlet/main.cpp)
-add_test(TestApp test/TestApp/main.cpp)
-add_test(TestThreadPool test/TestThreadPool/main.cpp)
-add_test(TestLogger test/TestLogger/main.cpp)
+# add_test(TestApp test/TestApp/main.cpp)
+# add_test(TestThreadPool test/TestThreadPool/main.cpp)
+# add_test(TestLogger test/TestLogger/main.cpp)
 # add_test(TestPlugin test/TestPlugin/main.cpp)
-add_plugin(Plugin test/TestPlugin/TestServlet.h test/TestPlugin/TestServlet.cpp)
-add_test(TestSqlite test/TestSqlite/main.cpp)
+# add_plugin(Plugin test/TestPlugin/TestServlet.h test/TestPlugin/TestServlet.cpp)
+# add_test(TestSqlite test/TestSqlite/main.cpp)
 
 # 工具文件
 add_executable(PluginManifestViewer
